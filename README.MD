@@ -14,6 +14,22 @@ app
  
 ---------images - Source images files 
 
+app
+
+----build - Build directory
+
+---------css - Css files
+
+------------min - Css minify version files
+
+---------js - Js files
+
+------------min - Js minify version files
+
+------------images - Optimized images from dist directory
+
+------------html - Html files
+
 ## Tasks list
 
 | Task | Command | Definition |
