@@ -3,3 +3,8 @@ npm-debug.log
 .idea
 !.gitignore
 release.zip
+config.js
+build/
+bower_components/
+app/
+dist/
