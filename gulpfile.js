@@ -38,6 +38,8 @@ let buildTemplateOptions = (options) => {
 
         if (typeof options[i].indexOf === 'function' && options[i].indexOf('-----timestamp------') !== -1) {
             RetOptions[i] = options[i].replace('-----timestamp------', Date.now);
+        } else {
+            RetOptions[i] = options[i];
         }
     }
 
@@ -120,7 +122,7 @@ series.registerTasks({
             _config.dist_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.js',
             '!' + _config.dist_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.min.js'
         ])
-            .pipe(uglify())
+            .pipe(uglify().on('error', console.log))
             .pipe(rename({
                 suffix: '.min'
             }))
@@ -132,7 +134,7 @@ series.registerTasks({
         gulp.src([
             _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.css',
             '!' + _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.min.css',
-        ]).pipe(minify({compatibility: 'ie9'}))
+        ]).pipe(minify({compatibility: 'ie9'}).on('error', console.log))
             .pipe(rename({
                 suffix: '.min'
             }))
@@ -236,11 +238,14 @@ series.registerTasks({
                 }
             }
 
+            let t = [];
             for (i in templateFiles) {
                 if (templateFiles.hasOwnProperty(i)) {
-                    gulp.watch(_config.dist_dir + '/' + _config.dist_templates_path + '/**/**/**/**/**/**/**/**/**/**/*.' + _config.template_extensions, ['templates']);
+                    t.push(templateFiles[i]);
                 }
             }
+
+            gulp.watch(t, ['templates']);
         }
 
         gulp.watch([
