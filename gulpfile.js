@@ -21,6 +21,29 @@ if (_config.template) {
     template = require(_config.template);
 }
 
+let buildTemplateOptions = (options) => {
+    let RetOptions = {};
+    if (typeof options !== 'object') {
+        return {};
+    }
+
+    for (let i in options) {
+        if (!options.hasOwnProperty(i)) {
+            continue;
+        }
+
+        if (typeof options[i] === 'object') {
+            RetOptions[i] = buildTemplateOptions(options[i]);
+        }
+
+        if (typeof options[i].indexOf === 'function' && options[i].indexOf('-----timestamp------') !== -1) {
+            RetOptions[i] = options[i].replace('-----timestamp------', Date.now);
+        }
+    }
+
+    return RetOptions;
+};
+
 let buildStyles = (compiler, ext, path) => {
 
     let paths = [
@@ -118,6 +141,8 @@ series.registerTasks({
             .pipe(livereload(_config.livereload_options || {}));
     }),
     'templates': (() => {
+        let options = buildTemplateOptions(_config.template_options);
+
         if (!_config.dist_templates_path) {
             return;
         }
@@ -151,7 +176,7 @@ series.registerTasks({
         gulp.src(
             templateFiles
         )
-            .pipe(template(_config.template_options || {}).on('error', console.log))
+            .pipe(template(options).on('error', console.log))
             .pipe(gulp.dest(_config.build_dir + '/' + _config.build_template_path))
             .pipe(plumber())
             .pipe(livereload(_config.livereload_options || {}));
@@ -191,8 +216,7 @@ series.registerTasks({
             .pipe(gulp.dest(_config.build_dir + '/' + _config.images_path + ''));
     }),
     'watch': (() => {
-        console.log(123123123);
-        // livereload.listen();
+        livereload.listen(_config.livereload_options);
         gulp.watch(_config.dist_dir + '/' + _config.less_path + '/**/**/**/**/**/**/**/**/**/**/*.less', ['less']);
         gulp.watch(_config.dist_dir + '/' + _config.sass_path + '/**/**/**/**/**/**/**/**/**/**/*.scss', ['sass']);
 
@@ -221,11 +245,15 @@ series.registerTasks({
 
         gulp.watch([
             _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.css',
+            _config.dist_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.css',
             '!' + _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.min.css',
+            '!' + _config.dist_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.min.css',
         ], ['minify-css']);
         gulp.watch([
             _config.build_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.js',
+            _config.dist_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.js',
             '!' + _config.build_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.min.js',
+            '!' + _config.dist_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.min.js',
         ], ['minify-js']);
     }),
     'release': (() => {
