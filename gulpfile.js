@@ -1,241 +1,254 @@
-const gulp = require('gulp'),
-    _config = require(__dirname + "/config.js"),
-    imagemin = require('gulp-imagemin'),
-    sass = require('gulp-sass'),
-    less = require('gulp-less'),
-    rename = require('gulp-rename'),
-    minify = require('gulp-clean-css'),
-    uglify = require('gulp-uglify'),
-    swig = require('gulp-swig'),
-    livereload = require('gulp-livereload'),
-    connect = require('gulp-connect'),
-    zip = require('gulp-zip'),
-    fs = require('fs'),
-    plumber = require("gulp-plumber"),
-    series = require('gulp-series'),
-    rsync = require('rsyncwrapper');
+/**
+ * @author Donii Sergii <doniysa@gmail.com>
+ */
 
-let template = undefined;
+/**
+ * @const {Function} series Gulp task series. See <a href="https://github.com/iameugenejo/gulps">Documentation</a> for detail
+ * @const {Object} connect Connect
+ * @const {CopyFiles} copyFiles Copy files class
+ * @const {Templates} templates Templates build class
+ * @const {Object} _config Template config
+ */
+const series          = require('gulp-series'),
+      connect         = require('gulp-connect'),
+      open            = require('open'),
+      _               = require('lodash'),
+      os              = require('os'),
+      fs              = require('fs'),
+      backgrounder    = require("backgrounder"),
+      exec            = require('child_process').exec,
+      copyFiles       = require('./helpers/CopyFiles'),
+      templates       = require("./helpers/Templates"),
+      _config         = require("./config.js"),
+      buildConfigPath = (config) => {
+          let conf = {};
 
-if (_config.template) {
-    template = require(_config.template);
-}
+          if (config.outDir) {
+              conf.outDir = config.outDir;
+          }
+          if (config.distDir) {
+              conf.distDir = config.distDir;
+          }
 
-let buildStyles = (compiler, ext, path) => {
+          return conf;
+      },
+      copyTask        = (paths, move) => {
+          move = move || false;
 
-    let paths = [
-        _config.dist_dir + '/' + path + '/*.' + ext,
-        '!' + _config.dist_dir + '/' + path + '/_*.' + ext,
-    ];
+          if (_.isUndefined(paths)) {
+              return;
+          }
 
-    if (typeof _config.skip === "object") {
-        for (let i in _config.skip_styles_dir) {
-            if (_config.skip_styles_dir[i][0] !== '!') {
-                _config.skip_styles_dir[i] = '!' + _config.skip_styles_dir[i];
-            }
-
-            paths.push(_config.skip_styles_dir  [i]);
-        }
-    }
-
-    return gulp.src(paths)
-        .pipe(compiler({
-            paths: [_config.dist_dir + '/' + path + '']
-        }).on('error', console.log))
-        .pipe(plumber())
-        .pipe(gulp.dest(_config.build_dir + '/' + _config.css_path + ''))
-        .pipe(livereload(_config.livereload_options || {}))
-};
-
+          let copy = new copyFiles(paths);
+          copy.process(move);
+      },
+      css             = require("./helpers/Css"),
+      images          = require("./helpers/Images"),
+      mJS             = require("./helpers/JS");
 
 series.registerTasks({
-    'connect': (() => {
-        let serverRoot = _config.server_root_path || __dirname;
-        return connect.server({
-            root: [serverRoot],
-            port: _config.listen_port || 8080
-        });
-    }),
-    'less': (() => {
-        if (!_config.less_path) {
-            return;
-        }
+    "server"     : () => {
+        let fd;
+        fd       = fs.openSync(__dirname + '/.pids', 'r');
+        let pids = fs.readFileSync(__dirname + '/.pids');
 
-        return buildStyles(less, 'less', _config.less_path);
-    }),
-    'sass': () => {
-        if (!_config.sass_path) {
-            return;
-        }
-
-        return buildStyles(sass, 'scss', _config.sass_paths);
-    },
-    'minify-js': (() => {
-        if (!_config.copy_js_files) {
-            return;
-        }
-
-        if (!_config.js_path) {
-            return;
-        }
-
-        let rsyncOptions = {
-            recursive: true,
-            syncDest: true,
-            delete: _config.delete_files,
-            args: ['--verbose'],
-            dest: _config.build_dir,
-            src: _config.dist_dir + '/' + _config.js_path,
-        };
-
-        if (_config.copy_js_files) {
-            rsync(rsyncOptions, function () {
+        if (pids = pids.toString()) {
+            pids = pids.toString();
+            pids.split(os.EOL).forEach((pid) => {
+                exec('kill ' + _.trim(pid));
             });
         }
+        fd      = fs.openSync(__dirname + '/.pids', 'w');
+        let pid = exec('node ' + __dirname + '/helpers/Server.js > /dev/null 2>/dev/null & echo $!');
+        fs.appendFileSync(fd, pid.pid + os.EOL);
 
-        gulp.src([
-            _config.dist_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.js',
-            '!' + _config.dist_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.min.js'
-        ])
-            .pipe(uglify())
-            .pipe(rename({
-                suffix: '.min'
-            }))
-            .pipe(plumber())
-            .pipe(gulp.dest(_config.build_dir + '/' + _config.js_path + '/'))
-            .pipe(livereload(_config.livereload_options || {}));
-    }),
-    'minify-css': (() => {
-        gulp.src([
-            _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.css',
-            '!' + _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.min.css',
-        ]).pipe(minify({compatibility: 'ie9'}))
-            .pipe(rename({
-                suffix: '.min'
-            }))
-            .pipe(plumber())
-            .pipe(gulp.dest(_config.build_dir + '/' + _config.css_path))
-            .pipe(livereload(_config.livereload_options || {}));
-    }),
-    'templates': (() => {
-        if (!_config.dist_templates_path) {
+    },
+    "minify-css" : () => {
+        let opt = module.exports.config;
+
+        if (!opt.css) {
             return;
         }
 
-        if (!fs.existsSync(_config.dist_dir + '/' + _config.dist_templates_path)) {
+        opt.css = _.isArray(opt.css) ? opt.css : [opt.css];
+
+        opt.css.forEach((next) => {
+            let _css = new css(next, opt.liveReloadOptions, buildConfigPath(opt));
+            _css.minify();
+        });
+    },
+    "build-css"  : () => {
+        let opt = module.exports.config;
+
+        if (!opt.css) {
             return;
         }
 
-        let templateFiles = [],
-            i,
-            pathTemplate = _config.dist_dir + '/' + _config.dist_templates_path + '/**/**/**/**/**/**/**/**/**/**/*.::extension::',
-            exts = (typeof _config.template_extensions === "object") ? _config.template_extensions : [_config.template_extensions];
+        opt.css = _.isArray(opt.css) ? opt.css : [opt.css];
 
-        for (i in exts) {
-            if (exts.hasOwnProperty(i) && typeof (exts[i]) === "string") {
-                templateFiles.push(pathTemplate.replace('::extension::', exts[i]));
-            }
-        }
+        opt.css.forEach((next) => {
+            let _css = new css(next, opt.liveReloadOptions, buildConfigPath(opt));
+            _css.build();
+        });
+    },
+    "minify-js"  : () => {
+        let opt = module.exports.config;
 
-        if (typeof _config.skip_templates_dir === "object") {
-            for (i in _config.skip_templates_dir) {
-                if (_config.skip_templates_dir.hasOwnProperty(i)) {
-                    if (_config.skip_templates_dir[i][0] !== '!') {
-                        _config.skip_templates_dir[i] = '!' + _config.skip_templates_dir[i];
-                    }
-                    templateFiles.push(_config.skip_templates_dir[i]);
-                }
-            }
-        }
-
-        gulp.src(
-            templateFiles
-        )
-            .pipe(template(_config.template_options || {}).on('error', console.log))
-            .pipe(gulp.dest(_config.build_dir + '/' + _config.build_template_path))
-            .pipe(plumber())
-            .pipe(livereload(_config.livereload_options || {}));
-    }),
-    'copy': (() => {
-        "use strict";
-        if (!(typeof _config.copyPaths === "object")) {
+        if (!opt.js) {
             return;
         }
 
-        let paths = _config.copyPaths;
+        opt.js = _.isArray(opt.js) ? opt.js : [opt.js];
 
-        for (let i in paths) {
-            if (paths.hasOwnProperty(i)) {
-                let rsyncOptions = {
-                    recursive: true,
-                    syncDest: true,
-                    delete: true,
-                    args: ['--verbose'],
-                    dest: i,
-                    src: paths[i]
-                };
+        opt.js.forEach((next) => {
+            let js = new mJS(next, opt.liveReloadOptions, buildConfigPath(opt));
+            js.minify()
+        });
 
-                rsync(rsyncOptions, function () {
-                });
-            }
-        }
+    },
+    "build-js"   : () => {
+        let opt = module.exports.config;
 
-    }),
-    'images': (() => {
-        if (!_config.images_path) {
+        if (!opt.js) {
             return;
         }
-        return gulp.src(_config.dist_dir + '/' + _config.images_path + '/**/**/**/**/**/**/**/**/**/**/*')
-            .pipe(imagemin())
-            .pipe(plumber())
-            .pipe(gulp.dest(_config.build_dir + '/' + _config.images_path + ''));
-    }),
-    'watch': (() => {
-        console.log(123123123);
-        // livereload.listen();
-        gulp.watch(_config.dist_dir + '/' + _config.less_path + '/**/**/**/**/**/**/**/**/**/**/*.less', ['less']);
-        gulp.watch(_config.dist_dir + '/' + _config.sass_path + '/**/**/**/**/**/**/**/**/**/**/*.scss', ['sass']);
 
-        if (_config.images_path) {
-            gulp.watch(_config.dist_dir + '/' + _config.images_path + '/**/**/**/*', ['images']);
+        opt.js = _.isArray(opt.js) ? opt.js : [opt.js];
+
+        opt.js.forEach((next) => {
+            let js = new mJS(next, opt.liveReloadOptions, buildConfigPath(opt));
+
+            js.build();
+        });
+    },
+    "imagemin"   : () => {
+        let opt = module.exports.config;
+
+        if (!opt.images) {
+            return;
         }
 
-        if (_config.template) {
-            let templateFiles = [],
-                i = 0,
-                pathTemplate = _config.dist_dir + '/' + _config.dist_templates_path + '/**/**/**/**/**/**/**/**/**/**/*.::extension::',
-                exts = (typeof _config.template_extensions === "object") ? _config.template_extensions : [_config.template_extensions];
+        opt.images = _.isArray(opt.images) ? opt.images : [opt.images];
 
-            for (i in exts) {
-                if (exts.hasOwnProperty(i) && typeof (exts[i]) === "string") {
-                    templateFiles.push(pathTemplate.replace('::extension::', exts[i]));
-                }
-            }
+        opt.images.forEach((next) => {
+            let imagemin = new images(next, opt.liveReloadOptions, buildConfigPath(opt));
+            imagemin.minify();
+        });
+    },
+    "ts"         : () => {
+        let opt = module.exports.config;
 
-            for (i in templateFiles) {
-                if (templateFiles.hasOwnProperty(i)) {
-                    gulp.watch(_config.dist_dir + '/' + _config.dist_templates_path + '/**/**/**/**/**/**/**/**/**/**/*.' + _config.template_extensions, ['templates']);
-                }
-            }
+        if (!opt.ts) {
+            return;
         }
 
-        gulp.watch([
-            _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.css',
-            '!' + _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.min.css',
-        ], ['minify-css']);
-        gulp.watch([
-            _config.build_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.js',
-            '!' + _config.build_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.min.js',
-        ], ['minify-js']);
-    }),
-    'release': (() => {
+        opt.ts = _.isArray(opt.js) ? opt.ts : [opt.ts];
+
+        opt.ts.forEach((next) => {
+            next.processor = 'gulp-typescript-babel';
+            let ts         = new mJS(next, opt.liveReloadOptions, buildConfigPath(opt));
+            ts.build();
+        });
+
+    },
+    "templates"  : () => {
+        let opt = module.exports.config;
+
+        if (!opt.templates) {
+            return;
+        }
+
+        opt.templates = _.isArray(opt.templates) ? opt.templates : [opt.templates];
+
+        opt.templates.forEach((next) => {
+            let template = new templates(next, opt.liveReloadOptions, buildConfigPath(opt));
+            template.build();
+        });
+    },
+    "minify-html": () => {
+        let opt = module.exports.config;
+
+        if (!opt.templates) {
+            return;
+        }
+
+        opt.templates = _.isArray(opt.templates) ? opt.templates : [opt.templates];
+
+        opt.templates.forEach((next) => {
+            if (!next.enableMin) {
+                return;
+            }
+            let template = new templates(next, opt.liveReloadOptions, buildConfigPath(opt));
+            template.minify();
+        });
+    },
+    "coffee"     : () => {
+        let opt = module.exports.config;
+
+        if (!opt.coffee) {
+            return;
+        }
+
+        opt.coffee = _.isArray(opt.js) ? opt.ts : [opt.ts];
+
+        opt.coffee.forEach((next) => {
+            next.processor = 'gulp-coffee';
+            let coffee     = new mJS(next, opt.liveReloadOptions, buildConfigPath(opt));
+            coffee.build();
+        });
+    },
+    "copy"       : () => {
+        let opt = module.exports.config;
+
+        if (!opt.copyFiles) {
+            return;
+        }
+
+        copyTask(opt.copyFiles, false);
+    },
+    "move"       : () => {
+        let opt = module.exports.config;
+        if (!opt.moveFiles) {
+            return;
+        }
+        copyTask(opt.moveFiles, true);
+    },
+    "watch"      : () => {
+        let opt = module.exports.config;
+    },
+    "release"    : (() => {
         gulp.src([_config.build_dir + '/**/**/**/**/**/**/**/**/**/**/*'])
             .pipe(zip('release.zip'))
             .pipe(gulp.dest('.'));
     }),
+    "amd-build"  : () => {
+
+    },
+    "concat"     : () => {
+
+    }
 });
 
-series.registerSeries('minify-css', ['less', 'sass', 'minify-css']);
-// series.registerSeries('watch', ['watch']);
-series.registerSeries('build', ['minify-css', 'templates', 'minify-js', 'images']);
-series.registerSeries('default', ['watch', 'less', 'sass', 'connect', 'templates', 'minify-css', 'minify-js', 'images', 'copy']);
+series.registerSeries('minify-css', ['build-css', 'minify-css']);
+series.registerSeries('watch', ['watch']);
+series.registerSeries('images-move', ['imagemin', 'move']);
+series.registerSeries('templates-move', ['templates', 'minify-html', 'move']);
+series.registerSeries('minify-css-move', ['minify-css', 'move']);
+series.registerSeries('minify-js-move', ['minify-js', 'move']);
+series.registerSeries('build', ['build-css', 'build-js', 'server', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move']);
+series.registerSeries('default', ['watch', 'build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
+
+if (_.size(_config.additionalTasks)) {
+    series.registerTasks(_config.additionalTasks);
+}
+
+if (_.size(_config.additionalSeries)) {
+    _.each(_config.additionalSeries, (list, name) => {
+        series.registerSeries(name, _.isArray(list) ? list : [list]);
+    });
+}
+
+module.exports = {
+    series: series,
+    config: _config
+};

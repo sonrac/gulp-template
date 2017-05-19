@@ -4,7 +4,8 @@ npm-debug.log
 !.gitignore
 release.zip
 config.js
-build/
+config-old.js
 bower_components/
-app/
-dist/
+.pids
+!tests/test-project/dist/amd/config.js
+docs/

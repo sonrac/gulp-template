@@ -6,47 +6,25 @@ Run ` npm install` before use
 
 Copy `config.dist.js` to `config.js` and change config variables
 
-| Option | Description |
-| ------ | ----------- |
-| build_dir | Path to build dir (output files directory) |
-| dist_dir | Path to source files path |
-| server_root_path | Path to server root directory |
-| listen_port | Listen port for local server based on `gulp-connect` package |
-| copy_js_files | Copy js file from destination to build directory. Using rsync |
-| js | JS files directory path in build |
-| js_path | JS path (adding to dist_dir/build_dir path) |
-| css_path | Css path (adding to dist_dir/build_dir path) |
-| dist_templates_path | Temlates path (adding to dist_dir/build_dir path) |
-| sass_path | Sass path (adding to dist_dir/build_dir path) |
-| less_path | Less path (adding to dist_dir/build_dir path) |
-| template | Template package name (default gulp-pug) for building template files into html |
-| template_options | Options for run build template |
-| template_extensions | Template file extensions (array or string)  |
-| livereload_options | Options for livereload listener |
-| rsync_js_callback | Callback after copies js files |
-| delete_files | Delete JS scripts rsync |
-| build_templates_path | Template path in build dir |
-| skip_templates_dir | Skip dirs for template path. Exclude by adding `!` to begin path |
-| copyPaths | Copy files setting. Adding to copy files to dist folder |
-| skip_styles_path | Skip path in less/sass build folder (auto spipped all *.less & *.sass files which beginning from _) |
+[See options description](global.html#config) first
 
 ## Tasks list
 
 | Task | Command | Definition |
 | ---- | ------- | ---------- |
-| connect | `gulp connect` | Run server |
-| less | `gulp less` | build less files |
-| sass | `gulp sass` | build sass files |
-| images | `gulp images` | optimize images |
-| less | `gulp minify-js` | minify js files |
-| minify-js | `gulp minify-js` | minify js files |
-| minify-css | `gulp minify-css` | minify css files |
+| server | `gulp connect` | Run server |
+| build-css | `gulp build-css` | build less files |
+| minify-css | `gulp minify-css` | build sass files |
+| imagemin | `gulp imagemin` | optimize images |
+| build-js | `gulp build-js` | Build js source |
 | templates | `gulp templates` | build html files from template |
-| watch | `gulp watch` | watch changes |
 | release | `gulp release` | Pack build version to zip archive |
 | build | `gulp build` | run build all files |
 | watch | `gulp watch` | Run gulp watcher |
 | copy | `gulp copy` | Copy files |
+| move | `gulp move` | Move files |
+| concat | `gulp concat` | Concatenation task |
+| amd-build | `gulp amd-build` | Build amd application |
 
 #### Run watcher, server & first build 
 
@@ -57,3 +35,21 @@ gulp
 ```
 
 `watch`, `connect` & `build` tasks
+
+# Test 
+
+Install dev dependencies first:
+
+```bash
+npm install --with-dev
+```
+
+Running test:
+
+```bash
+npm test
+```
+
+## Links 
+1. [Github Documnetation](https://sonrac.github.io/docs/gulp-template)
+2. [Official documentation](https://sonrac.info/front/gulp-template)

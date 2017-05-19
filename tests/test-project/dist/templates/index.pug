@@ -1,0 +1,44 @@
+include layouts/header
+
+body
+// 'title', 'article_id', 'body', 'slug', 'language'
+.container
+    form.repeater
+        div.repeater-box(data-repeater-list="Article")
+            .repeater-box-title
+                | Article model
+                span.add-button.btn.btn-success(data-repeater-create)
+                    | Add
+            div.repeater-item(data-repeater-item)
+                .form-group.col-md-3.field-articletranslates-title
+                    label.control-label
+                        | Title
+                    input.form-control#articletranslates-title(type="text", name="ArticleTranslates[ArticleTranslates][title]", data-origin-name='title')
+                    .help-block
+                .form-group.col-md-3.field-articletranslates-slug
+                    label.control-label
+                        | Slug
+                    input.form-control#articletranslates-body(type='text', name="ArticleTranslates[ArticleTranslates][slug]", data-origin-name='slug')
+                    .help-block
+                .form-group.col-md-3.field-articletranslates-body
+                    label.control-label
+                        | Body
+                    textarea.form-control#articletranslates-slug(cols=3, rows=5, name="ArticleTranslates[ArticleTranslates][body]", data-origin-name='body')
+                    .help-block
+                .form-group.left.field-articletranslates-article_id.hidden
+                    input.form-control#articletranslates-article_id(type='hidden', name="ArticleTranslates[ArticleTranslates][article_id]", data-origin-name='article_id')
+                .form-group.col-md-3.field-articletranslates-language
+                    label.control-label
+                        | Language
+                    select.form-control#articletranslates-language(name="ArticleTranslates[ArticleTranslates][language]", data-origin-name='language')
+                        option(value='ru')
+                            | Русский
+                        option(value='en')
+                            | English
+                        option(value='ua' selected='selected')
+                            | Украiнська
+                    .help-block
+                .form-group
+                    a.btn.btn-danger.right.margin-30(data-repeater-delete)
+                        | Delete
+                .clearfix

@@ -1,0 +1,14 @@
+package.json
+node_modules
+README
+CHANGES
+CHANGELOG
+HISTORY
+LICENSE
+LICENCE
+NOTICE
+*.MD
+*.md
+.
+tests/
+test

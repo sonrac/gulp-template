@@ -1,0 +1,19 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc","closure"]
+  },
+  "title": "GULP template API docs",
+  "opts": {
+    "title": "GULP template API docs",
+    "recurse": true
+  },
+  "source": {
+    "include": [
+      "helpers/",
+      "gulpfile.js",
+      "config.dist.js",
+      "README.MD"
+    ]
+  }
+} 
