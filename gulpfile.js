@@ -10,6 +10,7 @@ const gulp = require('gulp'),
     livereload = require('gulp-livereload'),
     connect = require('gulp-connect'),
     zip = require('gulp-zip'),
+    rimraf = require('rimraf'),
     fs = require('fs'),
     plumber = require("gulp-plumber"),
     series = require('gulp-series'),
@@ -48,30 +49,88 @@ let buildTemplateOptions = (options) => {
 
 let buildStyles = (compiler, ext, path) => {
 
-    let paths = [
-        _config.dist_dir + '/' + path + '/*.' + ext,
-        '!' + _config.dist_dir + '/' + path + '/_*.' + ext,
-    ];
+        let paths = [
+            _config.dist_dir + '/' + path + '/*.' + ext,
+            '!' + _config.dist_dir + '/' + path + '/_*.' + ext,
+        ];
 
-    if (typeof _config.skip === "object") {
-        for (let i in _config.skip_styles_dir) {
-            if (_config.skip_styles_dir[i][0] !== '!') {
-                _config.skip_styles_dir[i] = '!' + _config.skip_styles_dir[i];
+        if (typeof _config.skip === "object") {
+            for (let i in _config.skip_styles_dir) {
+                if (_config.skip_styles_dir[i][0] !== '!') {
+                    _config.skip_styles_dir[i] = '!' + _config.skip_styles_dir[i];
+                }
+
+                paths.push(_config.skip_styles_dir  [i]);
             }
-
-            paths.push(_config.skip_styles_dir  [i]);
         }
-    }
 
-    return gulp.src(paths)
-        .pipe(compiler({
-            paths: [_config.dist_dir + '/' + path + '']
-        }).on('error', console.log))
-        .pipe(plumber())
-        .pipe(gulp.dest(_config.build_dir + '/' + _config.css_path + ''))
-        .pipe(livereload(_config.livereload_options || {}))
-};
+        return gulp.src(paths)
+            .pipe(compiler({
+                paths: [_config.dist_dir + '/' + path + '']
+            }).on('error', console.log))
+            .pipe(plumber())
+            .pipe(gulp.dest(_config.build_dir + '/' + _config.css_path + ''))
+            .pipe(livereload(_config.livereload_options || {}))
+    },
+    copyFiles = (paths, moved) => {
+        moved = typeof moved !== "undefined" ? moved : false;
+        for (let i in paths) {
+            if (paths.hasOwnProperty(i)) {
+                try {
+                    let stat = fs.statSync(paths[i]);
+                } catch (e) {
+                    console.log('File does not exists: ' + paths[i]);
+                    continue;
+                }
 
+                let rsyncOptions = {
+                    recursive: true,
+                    syncDest: true,
+                    delete: true,
+                    args: ['--verbose'],
+                    dest: i,
+                    src: paths[i],
+                    deleteAll: moved
+                };
+
+                let syncDunc;
+                (syncDunc = (moved, rOptions, countTry) => {
+                    countTry = countTry || 0;
+
+                    if (countTry > 200) {
+                        return;
+                    }
+
+                    rsync(rOptions, function (error, stdout, stderr, command) {
+                        if (error || stderr) {
+                            console.log(stderr, error, rsyncOptions.src, rsyncOptions.dest);
+                            syncDunc(moved, rOptions, countTry + 1);
+                            return;
+                        }
+
+                        if (moved) {
+                            let src = typeof rOptions.src === 'string' ? [rOptions.src] : rOptions.src;
+                            for (let _i in src) {
+                                ((source, index) => {
+                                    let delFile = () => {
+                                        // console.log(source, index, arguments);
+                                        rimraf(source, function (error) {
+                                            if (error === null || !error) {
+                                                return;
+                                            }
+                                            delFile();
+                                        });
+                                    };
+
+                                    delFile();
+                                })(src[_i], _i);
+                            }
+                        }
+                    });
+                })(moved, rsyncOptions);
+            }
+        }
+    };
 
 series.registerTasks({
     'connect': (() => {
@@ -189,23 +248,28 @@ series.registerTasks({
             return;
         }
 
-        let paths = _config.copyPaths;
+        copyFiles(_config.copyPaths);
 
-        for (let i in paths) {
-            if (paths.hasOwnProperty(i)) {
-                let rsyncOptions = {
-                    recursive: true,
-                    syncDest: true,
-                    delete: true,
-                    args: ['--verbose'],
-                    dest: i,
-                    src: paths[i]
-                };
-
-                rsync(rsyncOptions, function () {
-                });
-            }
+    }),
+    'move': (() => {
+        "use strict";
+        if (!(typeof _config.movePaths === "object")) {
+            return;
         }
+
+        let files = {};
+        for (let i in _config.movePaths) {
+            if (!_config.movePaths.hasOwnProperty(i)) {
+                continue;
+            }
+
+            let dest = (__dirname + '/' + i).replace(/\/\//g, '/'),
+                src = _config.movePaths[i];
+
+            files[_config.movePaths[i]] = dest;
+        }
+
+        copyFiles(files, true);
 
     }),
     'images': (() => {
@@ -223,7 +287,7 @@ series.registerTasks({
         gulp.watch(_config.dist_dir + '/' + _config.sass_path + '/**/**/**/**/**/**/**/**/**/**/*.scss', ['sass']);
 
         if (_config.images_path) {
-            gulp.watch(_config.dist_dir + '/' + _config.images_path + '/**/**/**/*', ['images']);
+            gulp.watch(_config.dist_dir + '/' + _config.images_path + '/**/**/**/*', ['images-move']);
         }
 
         if (_config.template) {
@@ -245,7 +309,7 @@ series.registerTasks({
                 }
             }
 
-            gulp.watch(t, ['templates']);
+            gulp.watch(t, ['templates-move']);
         }
 
         gulp.watch([
@@ -253,13 +317,13 @@ series.registerTasks({
             _config.dist_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.css',
             '!' + _config.build_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.min.css',
             '!' + _config.dist_dir + '/' + _config.css_path + '/**/**/**/**/**/**/**/**/**/**/*.min.css',
-        ], ['minify-css']);
+        ], ['minify-css-move']);
         gulp.watch([
             _config.build_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.js',
             _config.dist_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.js',
             '!' + _config.build_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.min.js',
             '!' + _config.dist_dir + '/' + _config.js_path + '/**/**/**/**/**/**/**/**/**/**/*.min.js',
-        ], ['minify-js']);
+        ], ['minify-js-move']);
     }),
     'release': (() => {
         gulp.src([_config.build_dir + '/**/**/**/**/**/**/**/**/**/**/*'])
@@ -269,6 +333,10 @@ series.registerTasks({
 });
 
 series.registerSeries('minify-css', ['less', 'sass', 'minify-css']);
-// series.registerSeries('watch', ['watch']);
-series.registerSeries('build', ['minify-css', 'templates', 'minify-js', 'images']);
-series.registerSeries('default', ['watch', 'less', 'sass', 'connect', 'templates', 'minify-css', 'minify-js', 'images', 'copy']);
+series.registerSeries('watch', ['watch']);
+series.registerSeries('images-move', ['images', 'move']);
+series.registerSeries('templates-move', ['templates', 'move']);
+series.registerSeries('minify-css-move', ['minify-css', 'move']);
+series.registerSeries('minify-js-move', ['minify-js', 'move']);
+series.registerSeries('build', ['less', 'sass', 'connect', 'templates', 'minify-css', 'minify-js', 'images', 'copy', 'move']);
+series.registerSeries('default', ['watch', 'less', 'sass', 'connect', 'templates', 'minify-css', 'minify-js', 'images', 'copy', 'move']);

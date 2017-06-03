@@ -27,6 +27,7 @@ module.exports = {
     skip_styles_dir: [
         '!dist/'
     ],
+    movePaths: [],
     skip_templates_dir: [
         '!views/layout/*.pug',
         '!views/partial/*.pug',

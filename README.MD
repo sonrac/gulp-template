@@ -28,6 +28,7 @@ Copy `config.dist.js` to `config.js` and change config variables
 | build_templates_path | Template path in build dir |
 | skip_templates_dir | Skip dirs for template path. Exclude by adding `!` to begin path |
 | copyPaths | Copy files setting. Adding to copy files to dist folder |
+| movePaths | Move files setting. Adding to move files from some folder. Using it if you want move some files which builds in directory |
 | skip_styles_path | Skip path in less/sass build folder (auto spipped all *.less & *.sass files which beginning from) |
 
 ## Tasks list
@@ -47,6 +48,7 @@ Copy `config.dist.js` to `config.js` and change config variables
 | build | `gulp build` | run build all files |
 | watch | `gulp watch` | Run gulp watcher |
 | copy | `gulp copy` | Copy files |
+| move | `gulp move` | Move files |
 
 #### Run watcher, server & first build 
 
