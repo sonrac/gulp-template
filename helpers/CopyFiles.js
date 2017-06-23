@@ -2,6 +2,13 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
+/**
+ * @ignore _
+ * @ignore gulp
+ * @ignore watch
+ * @ignore Rsync
+ */
+
 const _         = require('lodash'),
       gulp      = require('gulp'),
       watch     = gulp.watch,

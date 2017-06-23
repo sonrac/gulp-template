@@ -2,7 +2,14 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
+/**
+ * @ignore _
+ * @type {PathBuild}
+ */
+
 const pathBuild = require('./PathBuild'),
+      gulp      = require('gulp'),
+      watch     = gulp.watch,
       _         = require('lodash');
 
 /**

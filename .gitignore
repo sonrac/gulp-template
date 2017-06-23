@@ -9,3 +9,4 @@ bower_components/
 .pids
 !tests/test-project/dist/amd/config.js
 docs/
+!tests/data/concat/js/amd/config.js

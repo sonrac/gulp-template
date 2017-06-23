@@ -2,10 +2,20 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
+/**
+ * @ignore _
+ * @ignore gulp
+ * @ignore connect
+ * @ignore config
+ */
+
 const _       = require('lodash'),
       connect = require('gulp-connect'),
       config  = require("./../config");
 
+/*
+
+ */
 /**
  * @class Server
  * Server runner in background

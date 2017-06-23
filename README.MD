@@ -53,3 +53,10 @@ npm test
 ## Links 
 1. [Github Documnetation](https://sonrac.github.io/docs/gulp-template)
 2. [Official documentation](https://sonrac.info/front/gulp-template)
+
+## Generate Docs
+
+Run 
+```bash
+npm run generate-html path/to/out/folder
+```

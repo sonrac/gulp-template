@@ -8,6 +8,23 @@
     "title": "GULP template API docs",
     "recurse": true
   },
+  "template": "node_modules/ink-docstrap/template",
+  "templates": {
+    "systemName"            : "GULP template API description",
+    "footer"                : "",
+    "copyright"             :  "Powered by @jsDOC. Author Donii Sergii <doniysa@gmail.com>",
+    "includeDate"           : true,
+    "navType"               : "inline",
+    "theme"                 : "lumen",
+    "linenums"              : true,
+    "collapseSymbols"       : true,
+    "outputSourceFiles"     : true,
+    "outputSourcePath"      : true,
+    "inverseNav"            : true,
+    "sort"					: true,
+    "search"                : true
+  },
+
   "source": {
     "include": [
       "helpers/",
@@ -16,4 +33,4 @@
       "README.MD"
     ]
   }
-} 
+}

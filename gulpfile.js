@@ -8,6 +8,12 @@
  * @const {CopyFiles} copyFiles Copy files class
  * @const {Templates} templates Templates build class
  * @const {Object} _config Template config
+ *
+ * @ignore _
+ * @ignore fs
+ * @ignore os
+ * @ignore backgrounder
+ * @ignore exec
  */
 const series          = require('gulp-series'),
       connect         = require('gulp-connect'),

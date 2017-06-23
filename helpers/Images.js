@@ -2,6 +2,14 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
+/**
+ * @ignore _
+ * @ignore gulp
+ * @ignore minify
+ * @ignore livereload
+ * @ignore changed
+ * @ignore plumber
+ */
 const gulp       = require('gulp'),
       _          = require('lodash'),
       plumber    = require('gulp-plumber'),

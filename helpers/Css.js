@@ -1,13 +1,22 @@
 /**
  * @author Donii Sergii <doniysa@gmail.com>
  */
-
+/**
+ * @ignore _
+ * @ignore gulp
+ * @ignore watch
+ * @ignore minify
+ * @ignore plumber
+ * @ignore livereload
+ * @ignore rename
+ */
 const _          = require('lodash'),
       gulp       = require('gulp'),
       minify     = require('gulp-clean-css'),
       plumber    = require('gulp-plumber'),
       livereload = require('gulp-livereload'),
       watch      = gulp.watch,
+      sourcemaps = require('gulp-sourcemaps'),
       baseBuild  = require("./BaseBuild"),
       rename     = require('gulp-rename'),
       pathBuild  = require("./PathBuild");
@@ -51,7 +60,6 @@ const _          = require('lodash'),
  * @property {String|Array} watchMinifyTasks Watch tasks for minify paths
  * @property {Object} configPaths Default path from config
  * @property {Object|Array} ignores Ignore files pattern
- *
  * @author Donii Sergii<doniysa@gmail.com>
  */
 class Css extends baseBuild {
@@ -91,8 +99,10 @@ class Css extends baseBuild {
         }
 
         let task = gulp.src(path.src)
+            .pipe(sourcemaps.init())
             .pipe(this.processor(this.processorOptions).on('error', console.log))
             .pipe(plumber())
+            .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest(path.dest))
             .pipe(livereload(this.liveReloadOptions));
 
@@ -133,11 +143,13 @@ class Css extends baseBuild {
             path.dest + '/*.css',
             '!' + path.dest + '/*.min.css',
         ])
+            .pipe(sourcemaps.init())
             .pipe(minify(this.minifyOptions).on('error', console.log))
             .pipe(plumber())
             .pipe(rename({
                 suffix: this.minifySuffix
             }))
+            .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest(path.dest))
             .pipe(livereload(this.liveReloadOptions));
 

@@ -2,10 +2,22 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
+/**
+ * @ignore _
+ * @ignore gulp
+ * @ignore watch
+ * @ignore plumber
+ * @ignore sourcemaps
+ * @ignore livereload
+ * @ignore minify
+ */
+
 const baseBuild  = require("./BaseBuild"),
       _          = require('lodash'),
       gulp       = require('gulp'),
       plumber    = require('gulp-plumber'),
+      watch      = gulp.watch,
+      rename     = require('gulp-rename'),
       livereload = require('gulp-livereload'),
       minify     = require('gulp-minify-html');
 

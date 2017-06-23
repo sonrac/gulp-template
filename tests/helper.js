@@ -17,8 +17,7 @@ let objHelper = {
                 fs.statSync(filename);
 
                 fs.unlinkSync(filename);
-            } catch (e) {
-            }
+            } catch (e) {}
         });
     },
     createEmptyFiles: (list) => {

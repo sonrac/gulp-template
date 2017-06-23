@@ -1,6 +1,11 @@
 /**
  * @author Donii Sergii <doniysa@gmail.com>
  */
+/**
+ * @ignore _
+ * @ignore gulp
+ * @ignore fs
+ */
 
 const _       = require('lodash'),
       pathObj = require('path'),

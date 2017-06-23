@@ -95,7 +95,6 @@
  * @property {Object} js.originalConfig Config which giving in constructor
  * @property {Object|Array} js.paths Paths
  * @property {Object|Array} js.processorOptions Processor options
- * @property {Array} tasks Additional js.task for build watcher
  * @property {Array|Object|undefined} js.additionalMinifyPath Additional minify paths
  * @property {Array|Object|undefined} js.additionalMinifyWatchCallback Additional minify watch paths
  * @property {Array|Object|undefined} js.additionalBuildCallback Additional build paths config

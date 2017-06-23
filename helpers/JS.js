@@ -1,6 +1,17 @@
 /**
  * @author Donii Sergii <doniysa@gmail.com>
  */
+/**
+ * @ignore _
+ * @ignore gulp
+ * @ignore watch
+ * @ignore babel
+ * @ignore uglify
+ * @ignore plumber
+ * @ignore sourcemaps
+ * @ignore livereload
+ * @ignore rename
+ */
 const _          = require('lodash'),
       gulp       = require('gulp'),
       babel      = require('gulp-babel'),
@@ -10,9 +21,9 @@ const _          = require('lodash'),
       watch      = gulp.watch,
       sourcemaps = require('gulp-sourcemaps'),
       baseBuild  = require("./BaseBuild"),
-      Css        = require("./Css");
-rename = require('gulp-rename'),
-    pathBuild = require("./PathBuild");
+      Css        = require("./Css"),
+      rename     = require('gulp-rename'),
+      pathBuild  = require("./PathBuild");
 
 /**
  * @class JS
@@ -101,8 +112,10 @@ class JS extends baseBuild {
         }
 
         let task = gulp.src(path.src)
+            .pipe(sourcemaps.init())
             .pipe(plumber())
             .pipe(this.processor(this.processorOptions, this.babelOptions).on('error', console.log))
+            .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest(path.dest))
             .pipe(livereload(this.liveReloadOptions));
 
@@ -149,8 +162,8 @@ class JS extends baseBuild {
             .pipe(rename({
                 suffix: this.minifySuffix
             }))
-            .pipe(gulp.dest(path.dest))
             .pipe(sourcemaps.write('.'))
+            .pipe(gulp.dest(path.dest))
             .pipe(livereload(this.liveReloadOptions));
         task.on('error', console.log);
     }
