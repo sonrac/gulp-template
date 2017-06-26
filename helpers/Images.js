@@ -95,6 +95,16 @@ class Images {
         });
     }
 
+    buildWatch() {
+        let paths = (new pathBuild(this.paths, this.outDir)).processFullPath();
+
+        if (!_.size(paths)) {
+            return;
+        }
+
+        gulp.watch(pathBuild.buildWatchPaths(path), ['gulp-imagemin']);
+    }
+
 }
 
 module.exports = Images;

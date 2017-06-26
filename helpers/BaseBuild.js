@@ -81,7 +81,7 @@ class BaseBuild {
 
         this.ignores          = config.ignorePatterns;
         this.watchTasks       = config.watchTasks || this.defTasks;
-        this.watchMinifyTasks = config.watchMinifyTasks || this.defTasks;
+        this.watchMinifyTasks = config.watchMinifyTasks || this.defMinifyTasks;
         if (_.isString(this.watchTasks)) {
             this.watchTasks = [this.watchTasks];
         }
@@ -178,17 +178,15 @@ class BaseBuild {
      * @author Donii Sergii<doniysa@gmail.com>
      */
     buildWatch() {
+        let paths;
+
         if (!_.size(paths = this.getBuildPaths())) {
             return;
         }
 
-        let _self = this;
+        watch.call(gulp, [pathBuild.buildWatchPaths(paths)]);
 
-        _.each(paths, (path) => {
-            watch(path, _self.watchBuildTasks);
-        });
-
-        if (_.isFunction(this.additionalWatchCallback.apply(this))) {
+        if (_.isFunction(this.additionalWatchCallback)) {
             this.additionalWatchCallback.apply(this);
         }
 
@@ -216,14 +214,10 @@ class BaseBuild {
             return;
         }
 
-        let _self = this;
+        watch.call(gulp, [pathBuild.buildWatchPaths(paths)]);
 
-        _.each(paths, (path) => {
-            watch(path, _self.watchMinifyTasks);
-        });
-
-        if (_.isFunction(this.additionalWatchCallback)) {
-            this.additionalWatchCallback.apply(this);
+        if (_.isFunction(this.additionalWatchMinifyCallback)) {
+            this.additionalWatchMinifyCallback.apply(this);
         }
 
     }

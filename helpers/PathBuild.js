@@ -349,6 +349,33 @@ class PathBuild {
 
         return realPaths;
     }
+
+    /**
+     * Build watch file list
+     *
+     * @param {Array} paths Path config
+     * @param {String} opt Option path name
+     *
+     * @returns {Array}
+     */
+    static buildWatchPaths(paths, opt) {
+        let nPaths = [];
+        _.each(paths, (path) => {
+            if (_.isArray(path[opt])) {
+                for (let i in path[opt]) {
+                    if (!path[opt].hasOwnProperty(i)) {
+                        continue;
+                    }
+
+                    nPaths.push(path[opt][i]);
+                }
+            } else {
+                nPaths.push(path[opt]);
+            }
+        });
+
+        return nPaths;
+    }
 }
 
 module.exports = PathBuild;

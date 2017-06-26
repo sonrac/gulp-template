@@ -159,7 +159,7 @@ class CopyFiles {
         this.paths.forEach((path) => {
             sources.push(path.src);
         });
-        watch(sources, this.tasks);
+        watch.call(gulp, sources, this.tasks);
     }
 }
 

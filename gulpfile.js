@@ -21,6 +21,10 @@ const series          = require('gulp-series'),
       _               = require('lodash'),
       os              = require('os'),
       fs              = require('fs'),
+      WATCH_BUILD     = 1,
+      WATCH_MINIFY    = 2,
+      WATCH_ALL       = 2,
+      concat          = require('./helpers/Concat'),
       backgrounder    = require("backgrounder"),
       exec            = require('child_process').exec,
       copyFiles       = require('./helpers/CopyFiles'),
@@ -38,22 +42,77 @@ const series          = require('gulp-series'),
 
           return conf;
       },
-      copyTask        = (paths, move) => {
+      gulp            = require('gulp'),
+      copyTask        = (confName, move, onlyWatch) => {
+          let opt = module.exports.config;
+
+          if (!opt[confName]) {
+              return;
+          }
+
           move = move || false;
+
+          let paths = opt[confName];
 
           if (_.isUndefined(paths)) {
               return;
           }
 
+          if (move) {
+              paths.tasks = paths.tasks || 'move';
+
+          }
+
           let copy = new copyFiles(paths);
-          copy.process(move);
+          if (!onlyWatch) {
+              copy.process(move);
+          } else {
+              copy.buildWatch();
+          }
+      },
+      nextBuildTask   = (configName, construct, minify, watchType) => {
+          let opt = module.exports.config;
+
+          if (!opt[configName]) {
+              return;
+          }
+
+          opt[configName] = _.isArray(opt[configName]) ? opt[configName] : [opt[configName]];
+
+          opt[configName].forEach((next) => {
+              let object = new construct(next, opt.liveReloadOptions, buildConfigPath(opt));
+              if (!minify || _.isString(minify)) {
+                  if (!watchType) {
+                      object.build();
+                  } else {
+                      switch (watchType) {
+                          case WATCH_BUILD:
+                              object.buildWatch();
+                              break;
+                          case WATCH_MINIFY:
+                              object.minifyWatch();
+                              break;
+                          case WATCH_ALL:
+                              object.buildWatch();
+                              object.minifyWatch();
+                          default:
+                              object[watchType]();
+                              break;
+                      }
+                  }
+              }
+
+              if (minify && _.isBoolean(minify)) {
+                  object.minify();
+              }
+          });
       },
       css             = require("./helpers/Css"),
       images          = require("./helpers/Images"),
       mJS             = require("./helpers/JS");
 
 series.registerTasks({
-    "server"     : () => {
+    "server"         : () => {
         let fd;
         fd       = fs.openSync(__dirname + '/.pids', 'r');
         let pids = fs.readFileSync(__dirname + '/.pids');
@@ -69,180 +128,101 @@ series.registerTasks({
         fs.appendFileSync(fd, pid.pid + os.EOL);
 
     },
-    "minify-css" : () => {
-        let opt = module.exports.config;
-
-        if (!opt.css) {
-            return;
-        }
-
-        opt.css = _.isArray(opt.css) ? opt.css : [opt.css];
-
-        opt.css.forEach((next) => {
-            let _css = new css(next, opt.liveReloadOptions, buildConfigPath(opt));
-            _css.minify();
-        });
+    "minify-css"     : () => {
+        nextBuildTask.call(this, ['css', css, true]);
     },
-    "build-css"  : () => {
-        let opt = module.exports.config;
-
-        if (!opt.css) {
-            return;
-        }
-
-        opt.css = _.isArray(opt.css) ? opt.css : [opt.css];
-
-        opt.css.forEach((next) => {
-            let _css = new css(next, opt.liveReloadOptions, buildConfigPath(opt));
-            _css.build();
-        });
+    "build-css"      : () => {
+        nextBuildTask.call(this, ['css', css]);
     },
-    "minify-js"  : () => {
-        let opt = module.exports.config;
-
-        if (!opt.js) {
-            return;
-        }
-
-        opt.js = _.isArray(opt.js) ? opt.js : [opt.js];
-
-        opt.js.forEach((next) => {
-            let js = new mJS(next, opt.liveReloadOptions, buildConfigPath(opt));
-            js.minify()
-        });
+    "minify-js"      : () => {
+        nextBuildTask.call(this, ['js', mJS, true]);
 
     },
-    "build-js"   : () => {
-        let opt = module.exports.config;
-
-        if (!opt.js) {
-            return;
-        }
-
-        opt.js = _.isArray(opt.js) ? opt.js : [opt.js];
-
-        opt.js.forEach((next) => {
-            let js = new mJS(next, opt.liveReloadOptions, buildConfigPath(opt));
-
-            js.build();
-        });
+    "build-js"       : () => {
+        nextBuildTask.call(this, ['js', mJS]);
     },
-    "imagemin"   : () => {
-        let opt = module.exports.config;
-
-        if (!opt.images) {
-            return;
-        }
-
-        opt.images = _.isArray(opt.images) ? opt.images : [opt.images];
-
-        opt.images.forEach((next) => {
-            let imagemin = new images(next, opt.liveReloadOptions, buildConfigPath(opt));
-            imagemin.minify();
-        });
+    "imagemin"       : () => {
+        nextBuildTask.call(this, ['images', images, true]);
     },
-    "ts"         : () => {
-        let opt = module.exports.config;
-
-        if (!opt.ts) {
-            return;
-        }
-
-        opt.ts = _.isArray(opt.js) ? opt.ts : [opt.ts];
-
-        opt.ts.forEach((next) => {
-            next.processor = 'gulp-typescript-babel';
-            let ts         = new mJS(next, opt.liveReloadOptions, buildConfigPath(opt));
-            ts.build();
-        });
-
+    "ts"             : () => {
+        nextBuildTask.call(this, ['ts', mJS]);
     },
-    "templates"  : () => {
-        let opt = module.exports.config;
-
-        if (!opt.templates) {
-            return;
-        }
-
-        opt.templates = _.isArray(opt.templates) ? opt.templates : [opt.templates];
-
-        opt.templates.forEach((next) => {
-            let template = new templates(next, opt.liveReloadOptions, buildConfigPath(opt));
-            template.build();
-        });
+    "templates"      : () => {
+        nextBuildTask.call(this, ['templates', templates]);
     },
-    "minify-html": () => {
-        let opt = module.exports.config;
-
-        if (!opt.templates) {
-            return;
-        }
-
-        opt.templates = _.isArray(opt.templates) ? opt.templates : [opt.templates];
-
-        opt.templates.forEach((next) => {
-            if (!next.enableMin) {
-                return;
-            }
-            let template = new templates(next, opt.liveReloadOptions, buildConfigPath(opt));
-            template.minify();
-        });
+    "minify-html"    : () => {
+        nextBuildTask.call(this, ['templates', templates, true]);
     },
-    "coffee"     : () => {
-        let opt = module.exports.config;
-
-        if (!opt.coffee) {
-            return;
-        }
-
-        opt.coffee = _.isArray(opt.js) ? opt.ts : [opt.ts];
-
-        opt.coffee.forEach((next) => {
-            next.processor = 'gulp-coffee';
-            let coffee     = new mJS(next, opt.liveReloadOptions, buildConfigPath(opt));
-            coffee.build();
-        });
+    "coffee"         : () => {
+        nextBuildTask.call(this, ['coffee', mJs]);
     },
-    "copy"       : () => {
-        let opt = module.exports.config;
-
-        if (!opt.copyFiles) {
-            return;
-        }
-
-        copyTask(opt.copyFiles, false);
+    "copy"           : () => {
+        copyTask('copyFiles', false);
     },
-    "move"       : () => {
-        let opt = module.exports.config;
-        if (!opt.moveFiles) {
-            return;
-        }
-        copyTask(opt.moveFiles, true);
+    "move"           : () => {
+        copyTask('moveFiles', true);
     },
-    "watch"      : () => {
-        let opt = module.exports.config;
-    },
-    "release"    : (() => {
+    "release"        : () => {
         gulp.src([_config.build_dir + '/**/**/**/**/**/**/**/**/**/**/*'])
             .pipe(zip('release.zip'))
             .pipe(gulp.dest('.'));
-    }),
-    "amd-build"  : () => {
+    },
+    "amd-build"      : () => {
 
     },
-    "concat"     : () => {
+    "concat"         : () => {
+        nextBuildTask.call(this, ['concat', concat]);
+    },
+    "concat-minify"  : () => {
+        nextBuildTask.call(this, ['concat', concat, true]);
+    },
+    "watch-css"      : () => {
+        nextBuildTask.call(this, ['css', css, 'all', WATCH_ALL]);
+    },
+    "watch-js"       : () => {
+        nextBuildTask.call(this, ['js', mJS, 'all', WATCH_ALL]);
+        nextBuildTask.call(this, ['ts', mJS, 'all', WATCH_ALL]);
+        nextBuildTask.call(this, ['coffee', mJS, 'all', WATCH_ALL]);
 
-    }
+    },
+    "watch-templates": () => {
+        nextBuildTask.call(this, ['templates', templates, false, WATCH_BUILD]);
+    },
+    "watch-copy"     : () => {
+        copyTask('copyFiles', false, true);
+    },
+    "watch-move"     : () => {
+        copyTask('moveFiles', true, true);
+    },
+    "watch-images"   : () => {
+        nextBuildTask.call(this, ['images', images, false, WATCH_BUILD]);
+    },
+    "watch-coffee"   : () => {
+        nextBuildTask.call(this, ['coffee', mJS, false, WATCH_ALL]);
+    },
+    "watch-ts"       : () => {
+        nextBuildTask.call(this, ['ts', mJS, false, WATCH_ALL]);
+    },
+    "watch-amd-build": () => {
+    },
+    "watch-concat"   : () => {
+        nextBuildTask.call(this, ['concat', concat, 'all', WATCH_ALL]);
+    },
+
 });
 
-series.registerSeries('minify-css', ['build-css', 'minify-css']);
-series.registerSeries('watch', ['watch']);
-series.registerSeries('images-move', ['imagemin', 'move']);
-series.registerSeries('templates-move', ['templates', 'minify-html', 'move']);
-series.registerSeries('minify-css-move', ['minify-css', 'move']);
-series.registerSeries('minify-js-move', ['minify-js', 'move']);
+series.registerSeries('s-minify-css', ['build-css', 'minify-css']);
+series.registerSeries('s-watch', ['watch-css', 'watch-js', 'watch-images', 'watch-copy', 'watch-move', 'watch-concat']);
+series.registerSeries('watch', ['watch-css', 'watch-js', 'watch-images', 'watch-copy', 'watch-move', 'watch-concat']);
+series.registerSeries('s-watch-all', ['watch-css', 'watch-js', 'watch-images', 'watch-copy', 'watch-move', 'watch-concat', 'watch-amd-build', 'watch-ts', 'watch-coffee']);
+series.registerSeries('s-images-move', ['imagemin', 'move']);
+series.registerSeries('s-templates-move', ['templates', 'minify-html', 'move']);
+series.registerSeries('s-minify-css-move', ['minify-css', 'move']);
+series.registerSeries('s-minify-js-move', ['minify-js', 'move']);
 series.registerSeries('build', ['build-css', 'build-js', 'server', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move']);
+series.registerSeries('s-build', ['build-css', 'build-js', 'server', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move']);
 series.registerSeries('default', ['watch', 'build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
+series.registerSeries('s-default', ['watch', 'build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
 
 if (_.size(_config.additionalTasks)) {
     series.registerTasks(_config.additionalTasks);

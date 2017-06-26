@@ -60,6 +60,7 @@ const baseBuild  = require("./BaseBuild"),
  * @property {String|Array} watchMinifyTasks Watch tasks for minify paths
  * @property {Object} configPaths Default path from config
  * @property {Object|Array} ignores Ignore files pattern
+ * @property {String|Array} defMinifyTasks Defaults tasks which run on minify
  *
  * @author Donii Sergii<doniysa@gmail.com>
  */
@@ -150,6 +151,14 @@ class Templates extends baseBuild {
             .pipe(gulp.dest(path.dest))
             .pipe(livereload(this.liveReloadOptions));
         task.on('error', console.log);
+    }
+
+    /**
+     *  Get default minify task
+     * @returns {string}
+     */
+    get defMinifyTasks() {
+        return 'minify-js';
     }
 }
 

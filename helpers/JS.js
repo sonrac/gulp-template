@@ -65,6 +65,7 @@ const _          = require('lodash'),
  * @property {Object} configPaths Default path from config
  * @property {Object|Array} ignores Ignore files pattern
  * @property {Object} babelOptions Options for gulp-babel package
+ * @property {String|Array} defMinifyTasks Defaults tasks which run on minify
  *
  * @author Donii Sergii<doniysa@gmail.com>
  */
@@ -142,6 +143,14 @@ class JS extends baseBuild {
      */
     get defTasks() {
         return 'build-js';
+    }
+
+    /**
+     *  Get default minify task
+     * @returns {string}
+     */
+    get defMinifyTasks() {
+        return 'minify-js';
     }
 
     /**

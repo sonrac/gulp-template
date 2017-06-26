@@ -60,6 +60,8 @@ const _          = require('lodash'),
  * @property {String|Array} watchMinifyTasks Watch tasks for minify paths
  * @property {Object} configPaths Default path from config
  * @property {Object|Array} ignores Ignore files pattern
+ * @property {String|Array} defMinifyTasks Defaults tasks which run on minify
+ *
  * @author Donii Sergii<doniysa@gmail.com>
  */
 class Css extends baseBuild {
@@ -155,6 +157,15 @@ class Css extends baseBuild {
 
         task.on('error', console.log);
     }
+
+    /**
+     *  Get default minify task
+     * @returns {string}
+     */
+    get defMinifyTasks() {
+        return 'minify-js';
+    }
+
 }
 
 module.exports = Css;
