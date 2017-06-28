@@ -1,4 +1,9 @@
+var config =
+        {
 
-/**
- * @author Donii Sergii <doniysa@gmail.com>
- */
+        };
+
+if (typeof module !== "undefined" && module.exports !== "undefined") {
+    module.exports = config;
+} else
+    requirejs.config(config);

@@ -14,6 +14,9 @@
  * @ignore os
  * @ignore backgrounder
  * @ignore exec
+ * @ignore series
+ * @ignore connect
+ * @ignore open
  */
 const series          = require('gulp-series'),
       connect         = require('gulp-connect'),
@@ -21,8 +24,26 @@ const series          = require('gulp-series'),
       _               = require('lodash'),
       os              = require('os'),
       fs              = require('fs'),
+      /**
+       * Build watcher flag
+       *
+       * @const
+       * @type {number}
+       */
       WATCH_BUILD     = 1,
+      /**
+       * Watch only for minify
+       *
+       * @const
+       * @type {number}
+       */
       WATCH_MINIFY    = 2,
+      /**
+       * Watch all source
+       *
+       * @const
+       * @type {number}
+       */
       WATCH_ALL       = 2,
       concat          = require('./helpers/Concat'),
       backgrounder    = require("backgrounder"),
@@ -30,6 +51,13 @@ const series          = require('gulp-series'),
       copyFiles       = require('./helpers/CopyFiles'),
       templates       = require("./helpers/Templates"),
       _config         = require("./config.js"),
+      /**
+       * Build destination and output dir from config
+       *
+       * @param {Object} config Config
+       *
+       * @returns {{outDir: {String}, distDir: {String}}}
+       */
       buildConfigPath = (config) => {
           let conf = {};
 
@@ -43,6 +71,13 @@ const series          = require('gulp-series'),
           return conf;
       },
       gulp            = require('gulp'),
+      /**
+       * Runner for move/copy task or watch
+       *
+       * @param {String} confName Config name
+       * @param {Boolean} move If true, run move copy task and copy otherwise
+       * @param {Boolean} onlyWatch If true run watcher
+       */
       copyTask        = (confName, move, onlyWatch) => {
           let opt = module.exports.config;
 
@@ -70,6 +105,13 @@ const series          = require('gulp-series'),
               copy.buildWatch();
           }
       },
+      /**
+       *
+       * @param {String} configName Option config name
+       * @param {Function} construct Function runner
+       * @param {Boolean} minify If minify flag, run minify task
+       * @param {String|Boolean|undefined} watchType Watch type. One of false/undefined (disable watch),
+       */
       nextBuildTask   = (configName, construct, minify, watchType) => {
           let opt = module.exports.config;
 
@@ -168,7 +210,7 @@ series.registerTasks({
             .pipe(gulp.dest('.'));
     },
     "amd-build"      : () => {
-
+        nextBuildTask.call(this, ['requireJSConcat', concat]);
     },
     "concat"         : () => {
         nextBuildTask.call(this, ['concat', concat]);
@@ -183,7 +225,6 @@ series.registerTasks({
         nextBuildTask.call(this, ['js', mJS, 'all', WATCH_ALL]);
         nextBuildTask.call(this, ['ts', mJS, 'all', WATCH_ALL]);
         nextBuildTask.call(this, ['coffee', mJS, 'all', WATCH_ALL]);
-
     },
     "watch-templates": () => {
         nextBuildTask.call(this, ['templates', templates, false, WATCH_BUILD]);
@@ -221,8 +262,8 @@ series.registerSeries('s-minify-css-move', ['minify-css', 'move']);
 series.registerSeries('s-minify-js-move', ['minify-js', 'move']);
 series.registerSeries('build', ['build-css', 'build-js', 'server', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move']);
 series.registerSeries('s-build', ['build-css', 'build-js', 'server', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move']);
-series.registerSeries('default', ['watch', 'build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
-series.registerSeries('s-default', ['watch', 'build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
+series.registerSeries('default', ['build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
+series.registerSeries('s-default', ['build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
 
 if (_.size(_config.additionalTasks)) {
     series.registerTasks(_config.additionalTasks);

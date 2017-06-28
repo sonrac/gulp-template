@@ -1,5 +1,8 @@
 /**
  * @author Donii Sergii <doniysa@gmail.com>
  */
-
-define();
+define([], () => {
+    return {
+        a: 123
+    };
+});

@@ -4,6 +4,7 @@
 
 const chai   = require('chai'),
       _      = require('lodash'),
+      expect = chai.expect,
       concat = require("./../../helpers/Concat");
 
 chai.use(require('chai-fs'));
@@ -12,10 +13,20 @@ chai.use(require('chai-fs'));
  *
  */
 describe('AMD test build', () => {
-    it('Test amd build', () => {
+    it('Test amd build', (done) => {
         let config = {
-            configFile: __dirname + '/../data/test-project/amd/config.js',
-
+            configFile: '../bootstrap',
+            baseUrl: __dirname + '/../data/concat/js/amd/src',
+            outFile: '../out/build.js'
         };
+
+        let c = new concat(config);
+
+        c.rJS();
+
+        setTimeout(() => {
+            expect(__dirname + '/../data/concat/js/amd/out/build.js').is.a.file();
+            done();
+        }, 500)
     });
 });

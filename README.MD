@@ -6,7 +6,7 @@ Run ` npm install` before use
 
 Copy `config.dist.js` to `config.js` and change config variables
 
-[See options description](global.html#config) first
+[See options description](https://sonrac.github.io/docs/gulp-template/global.html#config) first
 
 ## Tasks list
 

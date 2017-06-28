@@ -7,6 +7,11 @@
  * @ignore rename
  * @ignore cleanCSS
  * @ignore concat
+ * @ignore rjs
+ * @ignore uglify
+ * @ignore plumber
+ * @ignore babel
+ * @ignore autoprefixer
  */
 const _            = require('lodash'),
       gulp         = require('gulp'),
@@ -19,10 +24,9 @@ const _            = require('lodash'),
       cleanCSS     = require('gulp-clean-css'),
       uglify       = require('gulp-uglify'),
       pathObj      = require('path'),
+      rJS          = require('gulp-requirejs'),
       autoprefixer = require('gulp-autoprefixer'),
       concat       = require('gulp-concat');
-
-let _start = false;
 
 /**
  * @class Concat
@@ -43,16 +47,16 @@ class Concat {
      * @param {Object} options Concat options
      * @param {Object} liveReloadOptions <a target="_blank" href=https://github.com/vohof/gulp-livereload>Livereload</a> options for concat building
      * @param {{outDir: {String}, distDir: {String}}} defPaths Defined path from config
-     * @param {Boolean} useAMD Use amd build
      */
-    constructor(options, liveReloadOptions, defPaths, useAMD) {
+    constructor(options, liveReloadOptions, defPaths) {
         defPaths               = defPaths || {};
         this.liveReloadOptions = liveReloadOptions || {};
         this.paths             = options.paths;
         this.outDir            = defPaths.outDir;
+        this.outFile           = options.outFile;
         this.distDir           = defPaths.distDir;
         this.concatOptions     = options.concatOptions;
-        this.useAMD            = useAMD || false;
+        this.useAMD            = options.configFile || false;
         this.configFile        = options.configFile;
         this.sourcePath        = options.sourcePath;
         this.minPath           = options.minPath;
@@ -62,12 +66,34 @@ class Concat {
         this.minifyOptions     = options.minifyOptions || {};
         this.uglifyOptions     = options.uglifyOptions || {};
         this.minifySuffix      = options.minifySuffix || '.min';
+        this.baseUrl           = options.baseUrl || '';
+        this.rJSFile           = options.file;
         this.autoprefixOptions = options.autoprefixOptions || {
                 browsers: ['last 7 versions'],
                 cascade : true
             };
+        this.rJSOptions        = options.requireJSConfig || {};
+
+        if (this.useAMD) {
+            this.buildRJSConfig();
+        }
 
         this.processPath();
+    }
+
+    /**
+     * Build require JS config
+     */
+    buildRJSConfig() {
+        if (!this.useAMD) {
+            return;
+        }
+
+        this.rJSOptions = _.extend({
+            baseUrl: this.baseUrl,
+            name   : this.configFile,
+            out    : this.outFile
+        }, this.rJSOptions);
     }
 
     /**
@@ -90,6 +116,13 @@ class Concat {
 
         if (!_.isArray(this.paths)) {
             this.paths = [this.paths];
+        }
+
+        if (this.useAMD) {
+            this.paths.push({
+                src: this.rJSOptions.baseUrl + '/' + this.rJSOptions.name,
+                dest: this.rJSOptions.baseUrl + '/' + this.rJSOptions.out
+            })
         }
     }
 
@@ -134,16 +167,14 @@ class Concat {
             return;
         }
 
-        _start = true;
-
         let _self = this;
 
         _.each(this.paths, (path, index) => {
             _self.concatOptions      = _self.concatOptions || {};
             _self.concatOptions.path = path.src;
-            let _gulp = gulp.src(path.src)
-                .pipe(sourcemaps.init()),
-                answer = undefined;
+            let _gulp                = gulp.src(path.src)
+                    .pipe(sourcemaps.init()),
+                answer               = undefined;
             if (answer = _self.addToTasks.apply(_self, [path.src, /\.css$/, (path, gulp) => {
                     return gulp.pipe(autoprefixer(_self.autoprefixOptions));
                 }, [path, _gulp]])) {
@@ -163,10 +194,6 @@ class Concat {
         });
     }
 
-    concatAmd() {
-
-    }
-
     /**
      * Run minify files
      */
@@ -177,11 +204,12 @@ class Concat {
 
         let _self = this;
 
+
         _.each(this.paths, (path, index) => {
-            let _gulp = gulp.src(path.dest)
-                .pipe(sourcemaps.init())
-                .pipe(plumber())
-                .pipe(livereload(_self.liveReloadOptions)),
+            let _gulp  = gulp.src(path.dest)
+                    .pipe(sourcemaps.init())
+                    .pipe(plumber())
+                    .pipe(livereload(_self.liveReloadOptions)),
                 answer = undefined;
 
             if (answer = _self.addToTasks.apply(_self, [path.dest, /\.css$/, (path, gulp) => {
@@ -202,11 +230,15 @@ class Concat {
         });
     }
 
+    rJS() {
+        rJS(this.rJSOptions)
+            .pipe(gulp.dest(__dirname + "/../tests/data/concat/js/amd/out"));
+    }
+
     /**
      * Run watch files changed
      */
     buildWatch() {
-
     }
 
     /**

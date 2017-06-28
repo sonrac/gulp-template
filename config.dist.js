@@ -129,6 +129,10 @@
  * @property {Object} requireJSConcat.minOptions Options for <a href="https://github.com/terinjokes/gulp-uglify" target="_blank">gulp-uglify</a> building amd file
  * @property {Object} requireJSConcat.sourcePath Path to output build file
  * @property {String} requireJSConcat.minPath Path to minified builded file
+ * @property {Object} requireJSConcat.requireJSConfig Additional options for <a href="https://github.com/jorrit/gulp-requirejs">gulp-requirejs</a>
+ * @property {String} requireJSConcat.requireJSConfig.baseUrl Base path to source dir
+ * @property {String} requireJSConcat.requireJSConfig.outFile Output filename
+ * @property {String} requireJSConcat.requireJSConfig.configFile Relative path to bootstrap require.js file
  *
  * @property {Object} concatList Concatenate files config
  * @property {Object} concatList.paths Paths in format 'outfileName': [... files list ...]
@@ -139,15 +143,15 @@
  */
 const config = {
 
-    distDir           : __dirname + '/tests/test-project/dist',
-    outDir            : __dirname + '/tests/test-project/build',
-    server            : {
+    distDir          : __dirname + '/tests/test-project/dist',
+    outDir           : __dirname + '/tests/test-project/build',
+    server           : {
         path         : __dirname + '/tests/test-project/build',
         port         : 1112,
         openInBrowser: true,
     },
-    liveReloadOptions : {},
-    css               : {
+    liveReloadOptions: {},
+    css              : {
         paths                        : [
             {
                 src : 'less/**/**/*.less',
@@ -178,7 +182,7 @@ const config = {
         watchMinifyTasks             : ['minify-css'],
         additionalMinifyPath         : [],
     },
-    images            : {
+    images           : {
         paths: [
             {
                 src : __dirname + '/tests/data/images/src/*',
@@ -186,7 +190,7 @@ const config = {
             }
         ]
     },
-    templates         : {
+    templates        : {
         paths                        : [
             {
                 src : 'templates/**/**/*.pug',
@@ -220,7 +224,7 @@ const config = {
         additionalMinifyPath         : [],
         enableMin                    : true
     },
-    js                : {
+    js               : {
         paths                        : [
             {
                 src : 'js/*.js',
@@ -254,7 +258,7 @@ const config = {
         additionalMinifyPath         : []
 
     },
-    copyFiles         : {
+    copyFiles        : {
         rsyncOptions: {},
         paths       : [
             {
@@ -263,7 +267,7 @@ const config = {
             }
         ]
     },
-    moveFiles         : {
+    moveFiles        : {
         rsyncOptions: {},
         paths       : [
             {
@@ -276,7 +280,7 @@ const config = {
             },
         ]
     },
-    concatList        : [
+    concatList       : [
         {
             'js.min.js': [
                 '123',
@@ -285,13 +289,15 @@ const config = {
             ],
         }
     ],
-    additionalTasks   : {},
-    additionalSeries  : {},
-    requireJSConcat   : {
-        configFile: '',
-        minOptions: {},
-        sourcePath: '',
-        minPath   : ''
+    additionalTasks  : {},
+    additionalSeries : {},
+    requireJSConcat  : {
+        configFile     : '',
+        minOptions     : {},
+        sourcePath     : '',
+        minPath        : '',
+        outFile        : '',
+        requireJSConfig: {}
     },
 };
 
