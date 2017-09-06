@@ -14,14 +14,14 @@ const chai   = require('chai'),
 chai.use(require('chai-fs'));
 
 describe('Test JS Build from test project', () => {
-    series.series.tasks['templates']();
-
-    _helper.checkConfig();
-
     helper.dropFiles([
         __dirname + '/../../test-project/build/index.html',
         __dirname + '/../../test-project/build/index.min.html',
     ]);
+
+    series.series.tasks['templates']();
+
+    _helper.checkConfig();
 
     it('Test Build Pug', (done) => {
         setTimeout(() => {

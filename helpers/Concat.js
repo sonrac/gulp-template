@@ -206,26 +206,30 @@ class Concat {
 
 
         _.each(this.paths, (path, index) => {
-            let _gulp  = gulp.src(path.dest)
-                    .pipe(sourcemaps.init())
-                    .pipe(plumber())
-                    .pipe(livereload(_self.liveReloadOptions)),
+            let _answer = undefined,
                 answer = undefined;
 
-            if (answer = _self.addToTasks.apply(_self, [path.dest, /\.css$/, (path, gulp) => {
-                    return _gulp.pipe(cleanCSS(_self.minifyOptions).on('error', console.log));
-                }, [path, _gulp]])) {
-                _gulp = answer;
+            if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.css$/, (path, gulp) => {
+                    return [uglify, _self.uglifyOptions]
+                }, [path]])) {
+                answer = _answer;
             }
-            if (answer = _self.addToTasks.apply(_self, [path.dest, /\.js$/, (path, gulp) => {
-                    return gulp.pipe(uglify(_self.uglifyOptions).on('error', console.log));
-                }, [path, _gulp]])) {
-                _gulp = answer;
+            if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.js$/, (path, gulp) => {
+                    return [uglify, _self.uglifyOptions]
+                }, [path]])) {
+                answer = _answer;
             }
-            _gulp.pipe(rename({
-                suffix: _self.minifySuffix
-            }))
+
+            gulp.src(path.dest)
+                .pipe(sourcemaps.init())
+                .pipe(plumber())
+                .pipe(livereload(_self.liveReloadOptions))
+                .pipe(rename({
+                    suffix: _self.minifySuffix || '.min'
+                }))
+                .pipe(answer ? answer[0](answer[1]).on('error', console.log) : livereload())
                 .pipe(sourcemaps.write('.').on('error', console.log))
+                .pipe(livereload())
                 .pipe(gulp.dest(pathObj.dirname(path.dest)));
         });
     }

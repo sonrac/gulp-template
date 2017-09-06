@@ -16,7 +16,9 @@
   ],
   "author": "Donii Sergii <doniysa@gmail.com>",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "child-process": "^1.0.2"
+  },
   "optionalDependencies": {
     "gulp-coffee": "^2.3.4",
     "gulp-sass": "^3.1.0",

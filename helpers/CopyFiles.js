@@ -100,6 +100,7 @@ class CopyFiles {
      */
     rsyncBuild(dest, src) {
         return this.getRsyncOptions()
+            .flags('r')
             .exclude('.*')
             .source(src)
             .destination(dest);
@@ -128,6 +129,8 @@ class CopyFiles {
         }
 
         sync.execute((error, stdout, stderr) => {
+            if (error)
+                console.log('Copy or move error: ' + error);
         })
     }
 

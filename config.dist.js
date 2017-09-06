@@ -134,10 +134,10 @@
  * @property {String} requireJSConcat.requireJSConfig.outFile Output filename
  * @property {String} requireJSConcat.requireJSConfig.configFile Relative path to bootstrap require.js file
  *
- * @property {Object} concatList Concatenate files config
- * @property {Object} concatList.paths Paths in format 'outfileName': [... files list ...]
- * @property {Object} concatList.concatOptions Options for <a href="https://github.com/contra/gulp-concat" target="_blank">gulp-concat</a>
- * @property {Object} concatList.minifyOptions Minify options for <a href="https://github.com/terinjokes/gulp-uglify" target="_blank">gulp-uglify</a>
+ * @property {Object} concat Concatenate files config
+ * @property {Object} concat.paths Paths in format 'outfileName': [... files list ...]
+ * @property {Object} concat.concatOptions Options for <a href="https://github.com/contra/gulp-concat" target="_blank">gulp-concat</a>
+ * @property {Object} concat.minifyOptions Minify options for <a href="https://github.com/terinjokes/gulp-uglify" target="_blank">gulp-uglify</a>
  *
  * @author Donii Sergii<doniysa@gmail.com>
  */
@@ -262,8 +262,8 @@ const config = {
         rsyncOptions: {},
         paths       : [
             {
-                src : __dirname + '/tests/test-project/dist/plugins/*',
-                dest: __dirname + '/tests/test-project/build/plugins'
+                src : __dirname + '/tests/test-project/dist/plugins',
+                dest: __dirname + '/tests/test-project/build/'
             }
         ]
     },
@@ -271,24 +271,19 @@ const config = {
         rsyncOptions: {},
         paths       : [
             {
-                src : __dirname + '/tests/test-project/dist/plugins/yii/yii.js',
-                dest: __dirname + '/tests/test-project/build/'
-            },
-            {
-                src : __dirname + '/tests/test-project/build/yii.js',
-                dest: __dirname + '/tests/test-project/dist/plugins/yii/yii.js'
-            },
+                src : __dirname + '/tests/test-project/build/plugins/yii/yii.js',
+                dest: __dirname + '/tests/test-project/build/plugins'
+            }
         ]
     },
-    concatList       : [
-        {
-            'js.min.js': [
-                '123',
-                '123',
-                '213'
+    concat          : {
+        paths: {
+            'js-concat.js': [
+                'js/main.js',
+                'js/tabular.js',
             ],
         }
-    ],
+    },
     additionalTasks  : {},
     additionalSeries : {},
     requireJSConcat  : {
