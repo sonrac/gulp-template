@@ -242,13 +242,33 @@ class Concat {
     /**
      * Run watch files changed
      */
-    buildWatch() {
+    buildWatch(gulp) {
+        let files = [];
+        this.paths.forEach((arr, index) => {
+
+            for (let i in arr.src) {
+                if (!arr.src.hasOwnProperty(i)) {
+                    continue;
+                }
+
+                files.push(arr.src[i]);
+            }
+        });
+
+        gulp.watch(files, ['concat']);
     }
 
     /**
      * Watch changed source files for minified
      */
     minifyWatch() {
+        let files = [];
+
+        this.paths.forEach((arr, index) => {
+            files.push(arr.dest);
+        });
+
+        gulp.watch(files, ['concat-minify']);
     }
 }
 

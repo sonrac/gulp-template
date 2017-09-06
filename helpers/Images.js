@@ -102,7 +102,7 @@ class Images {
             return;
         }
 
-        gulp.watch(pathBuild.buildWatchPaths(path), ['gulp-imagemin']);
+        gulp.watch(pathBuild.buildWatchPaths(paths), ['gulp-imagemin']);
     }
 
 }

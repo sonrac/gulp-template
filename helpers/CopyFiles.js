@@ -157,12 +157,14 @@ class CopyFiles {
      *
      * @author Donii Sergii<doniysa@gmail.com>
      */
-    buildWatch() {
+    buildWatch(gulp) {
         let sources = [];
         this.paths.forEach((path) => {
             sources.push(path.src);
+            sources.push((path.src + '/**/**/**/**/**/**/**/**/**/**/**/**/**/**/**/**/**/**/*').replace(/\/\//g, '/'));
         });
-        watch.call(gulp, sources, this.tasks);
+
+        gulp.watch(sources, this.tasks);
     }
 }
 

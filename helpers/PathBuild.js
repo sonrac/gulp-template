@@ -364,6 +364,7 @@ class PathBuild {
      * @returns {Array}
      */
     static buildWatchPaths(paths, opt) {
+        opt = opt || 'src';
         let nPaths = [];
         _.each(paths, (path) => {
             if (_.isArray(path[opt])) {

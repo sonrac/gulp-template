@@ -19,8 +19,6 @@
  * @ignore open
  */
 const series          = require('gulp-series'),
-      connect         = require('gulp-connect'),
-      open            = require('open'),
       _               = require('lodash'),
       os              = require('os'),
       fs              = require('fs'),
@@ -44,9 +42,8 @@ const series          = require('gulp-series'),
        * @const
        * @type {number}
        */
-      WATCH_ALL       = 2,
+      WATCH_ALL       = 3,
       concat          = require('./helpers/Concat'),
-      backgrounder    = require("backgrounder"),
       exec            = require('child_process').exec,
       copyFiles       = require('./helpers/CopyFiles'),
       templates       = require("./helpers/Templates"),
@@ -102,7 +99,7 @@ const series          = require('gulp-series'),
           if (!onlyWatch) {
               copy.process(move);
           } else {
-              copy.buildWatch();
+              copy.buildWatch(gulp);
           }
       },
       /**
@@ -129,15 +126,18 @@ const series          = require('gulp-series'),
                   } else {
                       switch (watchType) {
                           case WATCH_BUILD:
-                              object.buildWatch();
+                              object.buildWatch(gulp);
                               break;
                           case WATCH_MINIFY:
-                              object.minifyWatch();
+                              object.minifyWatch(gulp);
                               break;
                           case WATCH_ALL:
-                              object.buildWatch();
-                              object.minifyWatch();
+                              object.buildWatch(gulp);
+                              object.minifyWatch(gulp);
+                              break;
                           default:
+                              console.log(123123);
+
                               object[watchType]();
                               break;
                       }
@@ -156,7 +156,6 @@ const series          = require('gulp-series'),
 series.registerTasks({
     "server"         : () => {
         let fd;
-        fd       = fs.openSync(__dirname + '/.pids', 'r');
         let pids = fs.readFileSync(__dirname + '/.pids');
 
         if (pids = pids.toString()) {
@@ -219,12 +218,12 @@ series.registerTasks({
         nextBuildTask.apply(this, ['concat', concat, true]);
     },
     "watch-css"      : () => {
-        nextBuildTask.apply(this, ['css', css, 'all', WATCH_ALL]);
+        nextBuildTask.apply(this, ['css', css, 'all', WATCH_BUILD]);
     },
     "watch-js"       : () => {
-        nextBuildTask.apply(this, ['js', mJS, 'all', WATCH_ALL]);
-        nextBuildTask.apply(this, ['ts', mJS, 'all', WATCH_ALL]);
-        nextBuildTask.apply(this, ['coffee', mJS, 'all', WATCH_ALL]);
+        nextBuildTask.apply(this, ['js', mJS, 'all', WATCH_BUILD]);
+        nextBuildTask.apply(this, ['ts', mJS, 'all', WATCH_BUILD]);
+        nextBuildTask.apply(this, ['coffee', mJS, 'all', WATCH_BUILD]);
     },
     "watch-templates": () => {
         nextBuildTask.apply(this, ['templates', templates, false, WATCH_BUILD]);
@@ -261,7 +260,7 @@ series.registerSeries('s-templates-move', ['templates', 'minify-html', 'move']);
 series.registerSeries('s-minify-css-move', ['minify-css', 'move']);
 series.registerSeries('s-minify-js-move', ['minify-js', 'move']);
 series.registerSeries('build', ['build-css', 'build-js', 'server', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move']);
-series.registerSeries('s-build', ['build-css', 'build-js', 'server', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move']);
+series.registerSeries('s-build', ['build-css', 'build-js', 'server', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'watch-move', 'concat', 'watch-concat', 'watch-ts', 'watch-coffee', 'watch-copy']);
 series.registerSeries('default', ['build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
 series.registerSeries('s-default', ['build-css', 'build-js', 'templates', 'minify-css', 'minify-js', 'minify-html', 'imagemin', 'copy', 'move', 'server']);
 
@@ -277,5 +276,6 @@ if (_.size(_config.additionalSeries)) {
 
 module.exports = {
     series: series,
-    config: _config
+    config: _config,
+    gulp: gulp
 };

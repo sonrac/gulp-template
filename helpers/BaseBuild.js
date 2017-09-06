@@ -8,8 +8,6 @@
  */
 
 const pathBuild = require('./PathBuild'),
-      gulp      = require('gulp'),
-      watch     = gulp.watch,
       _         = require('lodash');
 
 /**
@@ -19,6 +17,8 @@ const pathBuild = require('./PathBuild'),
  * @property {Object|Array|String} paths Config path. See <a href="global.html#pathConfig">For detail</a>
  * @property {Array} ignores Ignores pattern which will be adding to all <code>gulp.src</code> functions for css build
  * @property {String} processor NPM package name which will be require for this config section
+ * @property {String} sourceExt Source filename extension
+ * @property {String} outputExt Output filename extension
  * @property {Object} liveReloadOptions <a target="_blank" href=https://github.com/vohof/gulp-livereload>Livereload</a> options for css building
  * @property {Function|undefined} additionalMinifyWatchCallback Additional minify watch callback. Called on <a href="Css.html">Css class</a>
  * @property {Function|undefined} additionalBuildCallback Additional build callback. Called on <a href="Css.html">Css class</a>
@@ -65,11 +65,18 @@ class BaseBuild {
      * @author Donii Sergii<doniysa@gmail.com>
      */
     constructor(config, liveReloadOptions, configPaths) {
+        this.extension = 'css';
         if (new.target === BaseBuild) {
             throw new TypeError("Cannot construct BaseBuild instances directly");
         }
         this.originalConfig = config;
         this.configPaths    = configPaths;
+
+        if (!config.sourceExt && !this.sourceExt) {
+            throw 'Extension not set sourceExt in config';
+        }
+        this.sourceExt = this.sourceExt || config.sourceExt;
+        this.outputExt = config.outputExt || this.sourceExt;
 
         this.processorName    = config.processor || this.defaultProcessor;
         this.paths            = config.paths;
@@ -178,28 +185,46 @@ class BaseBuild {
      *
      * @author Donii Sergii<doniysa@gmail.com>
      */
-    buildWatch() {
+    buildWatch(gulp) {
         let paths;
 
         if (!_.size(paths = this.getBuildPaths())) {
             return;
         }
 
-        watch.call(gulp, [pathBuild.buildWatchPaths(paths)]);
+        gulp.watch(pathBuild.buildWatchPaths(paths), this.watchTasks);
 
         if (_.isFunction(this.additionalWatchCallback)) {
             this.additionalWatchCallback.apply(this);
         }
 
-        this.minifyWatch();
+        this.minifyWatch(gulp);
     }
+
+    preparePath(paths, min) {
+        let _self = this;
+
+        paths.forEach((path, index) => {
+            if (!min) {
+                return path;
+            }
+
+            if (!_self.outputExt || !_self.outputExt) {
+                return;
+            }
+
+            paths[index] = (paths[index] + "/**/**/**/**/*." + _self.outputExt).replace(/\/\//g, '/');
+        });
+
+        return paths;
+    };
 
     /**
      * Run watcher for minify task
      *
      * @author Donii Sergii<doniysa@gmail.com>
      */
-    minifyWatch() {
+    minifyWatch(gulp) {
 
         if (!this.enableMin) {
             return;
@@ -208,14 +233,15 @@ class BaseBuild {
         if (_.isFunction(this.additionalMinifyWatchCallback)) {
             this.additionalMinifyWatchCallback.apply(this);
         }
-
-        let paths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath();
+        let paths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true);
+        console.log(paths, this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchTasks);
 
         if (!_.size(paths)) {
             return;
         }
 
-        watch.call(gulp, [pathBuild.buildWatchPaths(paths)]);
+        // console.log(this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true));
+        gulp.watch(this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchMinifyTasks);
 
         if (_.isFunction(this.additionalWatchMinifyCallback)) {
             this.additionalWatchMinifyCallback.apply(this);
