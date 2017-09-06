@@ -197,7 +197,7 @@ class PathBuild {
         path = this.clearPath(path);
 
         if (_.isEmpty(path) || !path.length) {
-            path = context.outDir;
+            path = destination ? context.outDir : context.distDir;
         }
 
         let allPaths = [];
@@ -242,31 +242,26 @@ class PathBuild {
 
         let _path = (__dirname + '/../' + path[0]).replace(/\/\//g, '/');
         (destination ? [
-            (context.outDir || '') + path[0],
-            (context.outDir || '') + path[1],
-            (context.distDir || '') + path[0],
-            (context.distDir || '') + path[1],
+            ((context.outDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
+            ((context.outDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
         ] : [
-            (context.distDir || '') + path[0],
-            (context.distDir || '') + path[1],
-            (context.outDir || '') + path[0],
-            (context.outDir || '') + path[1]
+            ((context.distDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
+            ((context.distDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
         ]).forEach((value) => {
             allPaths.push(value);
         });
 
         if (destination) {
             [
-                (context.outDir || '') + path[0],
-                (context.outDir || '') + path[1],
+                ((context.outDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
+                ((context.outDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
                 context.outDir,
-                (context.distDir || '') + path[0],
-                (context.distDir || '') + path[1],
+                ((context.distDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
+                ((context.distDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
             ].forEach((value) => {
                 allPaths.push(value);
             });
         }
-
 
         let additional = path[2],
             firstAdd   = path[1];
@@ -274,19 +269,29 @@ class PathBuild {
         [
             _path,
             path[0],
-            __dirname + path[0],
+            (__dirname + '/' + path[0]).replace(/\/\//g, '/'),
             path[1],
             context.outDir
         ].forEach((value) => {
             allPaths.push(value);
         });
 
+        allPaths = _.uniq(allPaths);
+
+        (destination ? [
+            ((context.distDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
+            ((context.distDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
+        ] : [
+            ((context.outDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
+            ((context.outDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
+        ]).forEach((value) => {
+            allPaths.push(value);
+        });
 
         path = '';
 
-        allPaths = _.uniq(allPaths);
-
         let keys = _.keys(allPaths);
+
         for (let i = 0; i <= keys.length; i++) {
             let ind = keys[i];
             if (_.isUndefined(allPaths[ind])) {
@@ -309,7 +314,7 @@ class PathBuild {
                         return path;
                     }
 
-                    return (path + '/' + firstAdd).replace(/\/\//g, '').replace(/\/$/, '');
+                    return (path + '/' + firstAdd).replace(/\/\//g, '/').replace(/\/$/, '');
                 }
 
                 return (path + '/' + addToPath).replace(/\/\//g, '/').replace(/\/$/, '');

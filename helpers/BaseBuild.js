@@ -111,7 +111,8 @@ class BaseBuild {
      * @author Donii Sergii<doniysa@gmail.com>
      */
     getBuildPaths() {
-        let currentPaths = (new pathBuild(this.paths, this.defaultOutPath, this.configPaths)).processFullPath(true);
+        let currentPaths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true);
+
         if (!currentPaths.length) {
             return [];
         }
@@ -208,7 +209,7 @@ class BaseBuild {
             this.additionalMinifyWatchCallback.apply(this);
         }
 
-        let paths = (new pathBuild(this.paths, this.defaultOutPath, this.configPaths)).processFullPath();
+        let paths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath();
 
         if (!_.size(paths)) {
             return;

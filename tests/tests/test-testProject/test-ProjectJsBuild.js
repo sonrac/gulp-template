@@ -16,6 +16,8 @@ chai.use(require('chai-fs'));
 describe('Test JS Build from test project', () => {
     series.series.tasks['build-js']();
 
+    _helper.checkConfig();
+
     helper.dropFiles([
         __dirname + '/../../test-project/build/js/tabular.js',
         __dirname + '/../../test-project/build/js/tabular.min.js',

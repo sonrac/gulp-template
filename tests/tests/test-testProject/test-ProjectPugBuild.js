@@ -16,6 +16,8 @@ chai.use(require('chai-fs'));
 describe('Test JS Build from test project', () => {
     series.series.tasks['templates']();
 
+    _helper.checkConfig();
+
     helper.dropFiles([
         __dirname + '/../../test-project/build/index.html',
         __dirname + '/../../test-project/build/index.min.html',
@@ -30,7 +32,7 @@ describe('Test JS Build from test project', () => {
 
     it('Test HTML minify', (done) => {
         setTimeout(() => {
-            series.config.templates.enableMinigy = true;
+            series.config.templates.enableMinify = true;
             series.series.tasks['minify-html']();
             setTimeout(() => {
                 expect(__dirname + '/../../test-project/build/index.min.html').is.a.file();

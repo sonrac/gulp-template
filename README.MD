@@ -8,6 +8,8 @@ Copy `config.dist.js` to `config.js` and change config variables
 
 [See options description](https://sonrac.github.io/docs/gulp-template/global.html#config) first
 
+For using copy task install rsync package in your system
+
 ## Tasks list
 
 | Task | Command | Definition |

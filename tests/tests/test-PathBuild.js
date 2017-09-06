@@ -43,8 +43,8 @@ describe('Path build test', () => {
         paths = _prepare.processFullPath();
 
         expect(paths).is.a('Array');
-        expect(paths[0].src).is.equal('tests/data');
-        expect(paths[0].dest).is.equal('tests/data/1');
+        expect(paths[0].src).to.have.string('tests/data');
+        expect(paths[0].dest).to.have.string('tests/data/1');
     });
 
     it('Test full path builder & check does not exists src', () => {
@@ -82,8 +82,8 @@ describe('Path build test', () => {
 
         paths = _prepare.processFullPath(true);
 
-        expect(paths[0].src).is.equal('tests/data');
-        expect(paths[0].dest).is.equal('tests/data/destination');
+        expect(paths[0].src).to.have.string('tests/data');
+        expect(paths[0].dest).to.have.string('tests/data/destination');
     });
 
     it('Test full path builder with check destination path which exists as path array', (done) => {
@@ -97,8 +97,8 @@ describe('Path build test', () => {
 
         expect(paths[0].src).is.a('array');
         expect(paths[0].src.length).is.equal(1);
-        expect(paths[0].src[0]).is.equal('tests/data');
-        expect(paths[0].dest).is.equal('tests/data/destination');
+        expect(paths[0].src[0]).to.have.string('tests/data');
+        expect(paths[0].dest).to.have.string('tests/data/destination');
         done();
     });
 });

@@ -16,6 +16,8 @@ chai.use(require('chai-fs'));
 describe('Test CSS Build from test project', () => {
     series.series.tasks['build-css']();
 
+    _helper.checkConfig();
+
     helper.dropFiles([
         __dirname + '/../../test-project/build/cs/tabular.css',
         __dirname + '/../../test-project/build/cs/tabular.min.css',
