@@ -5,7 +5,8 @@
   "main": "gulpfile.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --timeout 15000 tests/tests; ./node_modules/mocha/bin/mocha --timeout 15000 tests/tests/test-testProject",
-    "generate-html": "jsdoc -t template -c jsdoc.conf.json -d"
+    "generate-html": "jsdoc -t template -c jsdoc.conf.json -d",
+    "install": "echo '' > .pids"
   },
   "repository": {
     "url": "https://github.com/sonrac/gulp-template",
