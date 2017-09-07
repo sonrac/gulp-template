@@ -184,7 +184,7 @@ class BaseBuild {
             return;
         }
 
-        watch.call(gulp, [pathBuild.buildWatchPaths(paths)]);
+        watch.apply(gulp, [pathBuild.buildWatchPaths(paths)]);
 
         if (_.isFunction(this.additionalWatchCallback)) {
             this.additionalWatchCallback.apply(this);
@@ -214,7 +214,7 @@ class BaseBuild {
             return;
         }
 
-        watch.call(gulp, [pathBuild.buildWatchPaths(paths)]);
+        watch.apply(gulp, [pathBuild.buildWatchPaths(paths)]);
 
         if (_.isFunction(this.additionalWatchMinifyCallback)) {
             this.additionalWatchMinifyCallback.apply(this);

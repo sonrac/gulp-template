@@ -171,32 +171,32 @@ series.registerTasks({
 
     },
     "minify-css"     : () => {
-        nextBuildTask.call(this, ['css', css, true]);
+        nextBuildTask.apply(this, ['css', css, true]);
     },
     "build-css"      : () => {
-        nextBuildTask.call(this, ['css', css]);
+        nextBuildTask.apply(this, ['css', css]);
     },
     "minify-js"      : () => {
-        nextBuildTask.call(this, ['js', mJS, true]);
+        nextBuildTask.apply(this, ['js', mJS, true]);
 
     },
     "build-js"       : () => {
-        nextBuildTask.call(this, ['js', mJS]);
+        nextBuildTask.apply(this, ['js', mJS]);
     },
     "imagemin"       : () => {
-        nextBuildTask.call(this, ['images', images, true]);
+        nextBuildTask.apply(this, ['images', images, true]);
     },
     "ts"             : () => {
-        nextBuildTask.call(this, ['ts', mJS]);
+        nextBuildTask.apply(this, ['ts', mJS]);
     },
     "templates"      : () => {
-        nextBuildTask.call(this, ['templates', templates]);
+        nextBuildTask.apply(this, ['templates', templates]);
     },
     "minify-html"    : () => {
-        nextBuildTask.call(this, ['templates', templates, true]);
+        nextBuildTask.apply(this, ['templates', templates, true]);
     },
     "coffee"         : () => {
-        nextBuildTask.call(this, ['coffee', mJs]);
+        nextBuildTask.apply(this, ['coffee', mJs]);
     },
     "copy"           : () => {
         copyTask('copyFiles', false);
@@ -210,24 +210,24 @@ series.registerTasks({
             .pipe(gulp.dest('.'));
     },
     "amd-build"      : () => {
-        nextBuildTask.call(this, ['requireJSConcat', concat]);
+        nextBuildTask.apply(this, ['requireJSConcat', concat]);
     },
     "concat"         : () => {
-        nextBuildTask.call(this, ['concat', concat]);
+        nextBuildTask.apply(this, ['concat', concat]);
     },
     "concat-minify"  : () => {
-        nextBuildTask.call(this, ['concat', concat, true]);
+        nextBuildTask.apply(this, ['concat', concat, true]);
     },
     "watch-css"      : () => {
-        nextBuildTask.call(this, ['css', css, 'all', WATCH_ALL]);
+        nextBuildTask.apply(this, ['css', css, 'all', WATCH_ALL]);
     },
     "watch-js"       : () => {
-        nextBuildTask.call(this, ['js', mJS, 'all', WATCH_ALL]);
-        nextBuildTask.call(this, ['ts', mJS, 'all', WATCH_ALL]);
-        nextBuildTask.call(this, ['coffee', mJS, 'all', WATCH_ALL]);
+        nextBuildTask.apply(this, ['js', mJS, 'all', WATCH_ALL]);
+        nextBuildTask.apply(this, ['ts', mJS, 'all', WATCH_ALL]);
+        nextBuildTask.apply(this, ['coffee', mJS, 'all', WATCH_ALL]);
     },
     "watch-templates": () => {
-        nextBuildTask.call(this, ['templates', templates, false, WATCH_BUILD]);
+        nextBuildTask.apply(this, ['templates', templates, false, WATCH_BUILD]);
     },
     "watch-copy"     : () => {
         copyTask('copyFiles', false, true);
@@ -236,18 +236,18 @@ series.registerTasks({
         copyTask('moveFiles', true, true);
     },
     "watch-images"   : () => {
-        nextBuildTask.call(this, ['images', images, false, WATCH_BUILD]);
+        nextBuildTask.apply(this, ['images', images, false, WATCH_BUILD]);
     },
     "watch-coffee"   : () => {
-        nextBuildTask.call(this, ['coffee', mJS, false, WATCH_ALL]);
+        nextBuildTask.apply(this, ['coffee', mJS, false, WATCH_ALL]);
     },
     "watch-ts"       : () => {
-        nextBuildTask.call(this, ['ts', mJS, false, WATCH_ALL]);
+        nextBuildTask.apply(this, ['ts', mJS, false, WATCH_ALL]);
     },
     "watch-amd-build": () => {
     },
     "watch-concat"   : () => {
-        nextBuildTask.call(this, ['concat', concat, 'all', WATCH_ALL]);
+        nextBuildTask.apply(this, ['concat', concat, 'all', WATCH_ALL]);
     },
 
 });
