@@ -100,6 +100,7 @@ class CopyFiles {
      */
     rsyncBuild(dest, src) {
         return this.getRsyncOptions()
+            .flags('r')
             .exclude('.*')
             .source(src)
             .destination(dest);
@@ -128,6 +129,8 @@ class CopyFiles {
         }
 
         sync.execute((error, stdout, stderr) => {
+            if (error)
+                console.log('Copy or move error: ' + error);
         })
     }
 
@@ -154,12 +157,14 @@ class CopyFiles {
      *
      * @author Donii Sergii<doniysa@gmail.com>
      */
-    buildWatch() {
+    buildWatch(gulp) {
         let sources = [];
         this.paths.forEach((path) => {
             sources.push(path.src);
+            sources.push((path.src + '/**/**/**/**/**/**/**/**/**/**/**/**/**/**/**/**/**/**/*').replace(/\/\//g, '/'));
         });
-        watch.call(gulp, sources, this.tasks);
+
+        gulp.watch(sources, this.tasks);
     }
 }
 

@@ -50,6 +50,7 @@ let objHelper = {
                 series.config[_self.configName] = {processor: processorName};
                 series.config.outDir            = optional ? __dirname + '/data/' + this.dir + '/' + path : '';
                 series.config.distDir           = optional ? __dirname + '/data/' + this.dir + '/' + path + '/out' : '';
+                _self.configName = 'js';
 
                 series.config = _self.buildCallback.apply(_self, [_self, series, processorName, path, ext, optional, _config, pattern, patternMin]);
 

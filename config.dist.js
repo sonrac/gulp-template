@@ -41,6 +41,9 @@
  * @property {Object|Array|String} css.path Config path. See <a href="global.html#pathConfig">For detail</a>
  * @property {Array} css.ignores Ignores pattern which will be adding to all <code>gulp.src</code> functions for css build
  * @property {String} css.processor Package name for build
+ * @property {String} css.sourceExt Source filename extension
+ * @property {String} css.outputExt Output filename extension
+ * @property {String} css.processor Package name for build
  * @property {Object} css.liveReloadOptions <a target="_blank" href=https://github.com/vohof/gulp-livereload>Livereload</a> options for css building
  * @property {Function|undefined} css.additionalMinifyWatchCallback Additional minify watch callback. Called on <a href="Css.html">Css class</a>
  * @property {Function|undefined} css.additionalBuildCallback Additional build callback. Called on <a href="Css.html">Css class</a>
@@ -63,6 +66,8 @@
  * @property {Object|Array|String} templates.path Config path. See <a href="global.html#pathConfig">For detail</a>
  * @property {Array} templates.ignores Ignores pattern which will be adding to all <code>gulp.src</code> functions for templates build
  * @property {String} templates.processor Package name for build
+ * @property {String} templates.sourceExt Source filename extension
+ * @property {String} templates.outputExt Output filename extension
  * @property {Object} templates.liveReloadOptions <a target="_blank" href=https://github.com/vohof/gulp-livereload>Livereload</a> options for templates building
  * @property {Function|undefined} templates.additionalMinifyWatchCallback Additional minify watch callback. Called on <a href="Templates.html">Templates class</a>
  * @property {Function|undefined} templates.additionalBuildCallback Additional build callback. Called on <a href="Templates.html">Templates class</a>
@@ -80,6 +85,8 @@
  * @property {Object|Array|String} js.paths Config path. See <a href="global.html#pathConfig">For detail</a>
  * @property {Array} js.ignores Ignores pattern which will be adding to all <code>gulp.src</code> functions for js build
  * @property {String} js.processor Package name for build
+ * @property {String} js.sourceExt Source filename extension
+ * @property {String} js.outputExt Output filename extension
  * @property {Object} js.liveReloadOptions <a target="_blank" href=https://github.com/vohof/gulp-livereload>Livereload</a> options for js building
  * @property {Function|undefined} js.additionalMinifyWatchCallback Additional minify watch callback. Called on <a href="Js.html">JS class</a>
  * @property {Function|undefined} js.additionalBuildCallback Additional build callback. Called on <a href="Js.html">JS class</a>
@@ -134,10 +141,10 @@
  * @property {String} requireJSConcat.requireJSConfig.outFile Output filename
  * @property {String} requireJSConcat.requireJSConfig.configFile Relative path to bootstrap require.js file
  *
- * @property {Object} concatList Concatenate files config
- * @property {Object} concatList.paths Paths in format 'outfileName': [... files list ...]
- * @property {Object} concatList.concatOptions Options for <a href="https://github.com/contra/gulp-concat" target="_blank">gulp-concat</a>
- * @property {Object} concatList.minifyOptions Minify options for <a href="https://github.com/terinjokes/gulp-uglify" target="_blank">gulp-uglify</a>
+ * @property {Object} concat Concatenate files config
+ * @property {Object} concat.paths Paths in format 'outfileName': [... files list ...]
+ * @property {Object} concat.concatOptions Options for <a href="https://github.com/contra/gulp-concat" target="_blank">gulp-concat</a>
+ * @property {Object} concat.minifyOptions Minify options for <a href="https://github.com/terinjokes/gulp-uglify" target="_blank">gulp-uglify</a>
  *
  * @author Donii Sergii<doniysa@gmail.com>
  */
@@ -158,6 +165,8 @@ const config = {
                 dest: 'css/'
             }
         ],
+        sourceExt: "less",
+        outputExt: "css",
         ignorePatterns               : [
             '!tests/test-project/dist/less/**/**/_*.less',
             '!tests/test-project/dist/less/layouts/*.less',
@@ -197,6 +206,8 @@ const config = {
                 dest: ''
             }
         ],
+        sourceExt: "pug",
+        outputExt: "html",
         ignorePatterns               : [
             '!tests/test-project/dist/templates/layouts/*.pug'
         ],
@@ -219,8 +230,8 @@ const config = {
             compatibility: 'ie9'
         },
         minifySuffix                 : '.min',
-        watchTasks                   : ['build-css'],
-        watchMinifyTasks             : ['minify-css'],
+        watchTasks                   : ['templates'],
+        watchMinifyTasks             : ['minify-html'],
         additionalMinifyPath         : [],
         enableMin                    : true
     },
@@ -234,6 +245,8 @@ const config = {
         babelOptions                 : {
             presets: ['es2015']
         },
+        sourceExt: "js",
+        outputExt: 'js',
         processorOptions             : {
             presets: ['es2015']
         },
@@ -253,17 +266,17 @@ const config = {
             compatibility: 'ie9'
         },
         minifySuffix                 : '.min',
-        watchTasks                   : ['build-css'],
-        watchMinifyTasks             : ['minify-css'],
-        additionalMinifyPath         : []
-
+        watchTasks                   : ['build-js'],
+        watchMinifyTasks             : ['minify-js'],
+        additionalMinifyPath         : [],
+        enableMin                    : true,
     },
     copyFiles        : {
         rsyncOptions: {},
         paths       : [
             {
-                src : __dirname + '/tests/test-project/dist/plugins/*',
-                dest: __dirname + '/tests/test-project/build/plugins'
+                src : __dirname + '/tests/test-project/dist/plugins',
+                dest: __dirname + '/tests/test-project/build/'
             }
         ]
     },
@@ -271,24 +284,19 @@ const config = {
         rsyncOptions: {},
         paths       : [
             {
-                src : __dirname + '/tests/test-project/dist/plugins/yii/yii.js',
-                dest: __dirname + '/tests/test-project/build/'
-            },
-            {
-                src : __dirname + '/tests/test-project/build/yii.js',
-                dest: __dirname + '/tests/test-project/dist/plugins/yii/yii.js'
-            },
+                src : __dirname + '/tests/test-project/build/plugins/yii/yii.js',
+                dest: __dirname + '/tests/test-project/build/plugins'
+            }
         ]
     },
-    concatList       : [
-        {
-            'js.min.js': [
-                '123',
-                '123',
-                '213'
+    concat          : {
+        paths: {
+            'js-concat.js': [
+                'js/main.js',
+                'js/tabular.js',
             ],
         }
-    ],
+    },
     additionalTasks  : {},
     additionalSeries : {},
     requireJSConcat  : {

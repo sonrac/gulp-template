@@ -2,10 +2,8 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
-const _helper = require('./../../configRestore');
-_helper.checkConfig();
-
-const chai   = require('chai'),
+const _helper = require('./../../configRestore'),
+      chai   = require('chai'),
       fs     = require('fs'),
       expect = chai.expect,
       helper = require('./../../helper'),
@@ -14,12 +12,15 @@ const chai   = require('chai'),
 chai.use(require('chai-fs'));
 
 describe('Test CSS Build from test project', () => {
-    series.series.tasks['build-css']();
 
     helper.dropFiles([
         __dirname + '/../../test-project/build/cs/tabular.css',
         __dirname + '/../../test-project/build/cs/tabular.min.css',
     ]);
+
+    series.series.tasks['build-css']();
+
+    _helper.checkConfig();
 
     it('Test Build CSS', (done) => {
         setTimeout(() => {

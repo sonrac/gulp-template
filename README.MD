@@ -8,11 +8,13 @@ Copy `config.dist.js` to `config.js` and change config variables
 
 [See options description](https://sonrac.github.io/docs/gulp-template/global.html#config) first
 
+For using copy task install rsync package in your system
+
 ## Tasks list
 
 | Task | Command | Definition |
 | ---- | ------- | ---------- |
-| server | `gulp connect` | Run server |
+| server | `gulp connect` | Run server. [On this link](http://localhost:1112) by default|
 | minify-css | `gulp minify-css` | minify css files |
 | build-css | `gulp build-css` | build css files |
 | minify-js | `gulp minify-js` | minify js files |

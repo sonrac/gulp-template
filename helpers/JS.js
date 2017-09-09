@@ -33,6 +33,8 @@ const _          = require('lodash'),
  * @property {Object|Array|String} paths Config path. See <a href="global.html#pathConfig">For detail</a>
  * @property {Array} ignores Ignores pattern which will be adding to all <code>gulp.src</code> functions for css build
  * @property {String} processor NPM package name which will be require for this config section
+ * @property {String} sourceExt Source filename extension
+ * @property {String} outputExt Output filename extension
  * @property {Object} liveReloadOptions <a target="_blank" href=https://github.com/vohof/gulp-livereload>Livereload</a> options for css building
  * @property {Function|undefined} additionalMinifyWatchCallback Additional minify watch callback. Called on <a href="Css.html">Css class</a>
  * @property {Function|undefined} additionalBuildCallback Additional build callback. Called on <a href="Css.html">Css class</a>
@@ -81,11 +83,14 @@ class JS extends baseBuild {
      * @author Donii Sergii<doniysa@gmail.com>
      */
     constructor(config, liveReloadOptions, configPaths) {
+
         super(config, liveReloadOptions, configPaths);
 
         this.babelOptions = _.size(config.babelOptions) ? config.babelOptions : {
             presets: ['es2015']
         };
+
+        this.outputExt = 'js';
 
         this.processorOptions = config.processorOptions || this.babelOptions;
     }

@@ -6,16 +6,16 @@ const fs = require('fs');
 
 let objHelper = {
     checkConfig  : () => {
-        if (fs.existsSync(__dirname + '/../config.js')) {
+        if (fs.existsSync(__dirname + '/../config.js') && !fs.existsSync(__dirname + '/../config-old.js')) {
             fs.renameSync(__dirname + '/../config.js', __dirname + '/../config-old.js');
         }
 
-        fs.writeSync(fs.openSync(__dirname + '/../config.js', 'w'), fs.readFileSync(__dirname + '/../config.dist.js'));
+        fs.writeFileSync(__dirname + '/../config.js', fs.readFileSync(__dirname + '/../config.dist.js').toString());
     },
     restoreConfig: () => {
 
         if (fs.existsSync(__dirname + '/../config-old.js')) {
-            fs.writeSync(fs.openSync(__dirname + '/../config.js', 'w'), fs.readFileSync(__dirname + '/../config.dist.js'));
+            fs.writeFileSync(__dirname + '/../config.js', fs.readFileSync(__dirname + '/../config.dist.js').toString());
             fs.unlinkSync(__dirname + '/../config-old.js');
         }
 

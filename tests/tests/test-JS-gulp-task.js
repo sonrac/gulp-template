@@ -34,9 +34,11 @@ let build = new helper.buildTest({
 
         _config = _config || {};
 
-        series.config[this.configName] = _.extend(series.config[this.configName], {
+        series.config[obj.configName] = _.extend(series.config[obj.configName], {
             processor       : _config.processor || 'gulp-babel',
             babelOptions    : _config.babelOptions,
+            sourceExt       : ext,
+            outputExt       : 'js',
             processorOptions: _config.processorOptions
         });
 
@@ -51,7 +53,8 @@ describe('Test JS constructor', () => {
     it('Test simple options', (done) => {
 
         let js = new JS({
-            paths: ['1']
+            paths: ['1'],
+            sourceExt: 'js',
         }, {}, {
             outDir : __dirname,
             distDir: __dirname
