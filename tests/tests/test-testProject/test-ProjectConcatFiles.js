@@ -20,6 +20,9 @@ describe('Test concatenate files', () => {
     sys.execSync('rm -rf ' + minPath);
     sys.execSync('rm -rf ' + minPath + '.map');
 
+    console.log(series.config['concat']);
+    process.exit();
+
     series.series.tasks['concat']();
 
     it('Test copy files in project', (done) => {
@@ -31,14 +34,14 @@ describe('Test concatenate files', () => {
         }, 400);
     });
 
-    it('Test copy files in project', (done) => {
-        setTimeout(() => {
-            series.series.tasks['concat-minify']();
-            setTimeout(() => {
-                expect(minPath).is.a.file();
-                done();
-                _helper.restoreConfig();
-            }, 900);
-        }, 400);
-    });
+    // it('Test copy files in project', (done) => {
+    //     setTimeout(() => {
+    //         series.series.tasks['concat-minify']();
+    //         setTimeout(() => {
+    //             expect(minPath).is.a.file();
+    //             done();
+    //             _helper.restoreConfig();
+    //         }, 900);
+    //     }, 400);
+    // });
 });

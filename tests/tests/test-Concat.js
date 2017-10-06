@@ -56,7 +56,7 @@ const _        = require('lodash'),
 chai.use(require('chai-fs'));
 
 describe('Test files concatenate', () => {
-    it('Test constructor concatenate with fully path', (done) => {
+    /*it('Test constructor concatenate with fully path', (done) => {
         let config          = {};
         config.min          = __dirname + '/test.css';
         config.config       = {};
@@ -130,7 +130,7 @@ describe('Test files concatenate', () => {
         ];
 
         baseTest(config, done, true, true);
-    });
+    });*/
 
     it('Test concatenate & minify css with relative path', (done) => {
         let config          = {

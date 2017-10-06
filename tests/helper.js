@@ -17,7 +17,8 @@ let objHelper = {
                 fs.statSync(filename);
 
                 fs.unlinkSync(filename);
-            } catch (e) {}
+            } catch (e) {
+            }
         });
     },
     createEmptyFiles: (list) => {
@@ -46,13 +47,17 @@ let objHelper = {
                     __dirname + '/data/' + _self.dir + '/' + path + '/out/test' + _self.minifySuffix + '.' + this.extFile
                 ]);
 
-                series.config                   = _.extend(series.config || {}, _self.config || {});
-                series.config[_self.configName] = {processor: processorName};
-                series.config.outDir            = optional ? __dirname + '/data/' + this.dir + '/' + path : '';
-                series.config.distDir           = optional ? __dirname + '/data/' + this.dir + '/' + path + '/out' : '';
-                _self.configName = 'js';
+                series.config                             = _.extend(series.config || {}, _self.config || {});
+                series.config[_self.configName]           = {processor: processorName};
+                series.config.outDir                      = optional ? __dirname + '/data/' + this.dir + '/' + path : '';
+                series.config.distDir                     = optional ? __dirname + '/data/' + this.dir + '/' + path + '/out' : '';
+                series.config[_self.configName].sourceExt = ext;
+                series.config[_self.configName].outputExt = _self.outputExt;
 
                 series.config = _self.buildCallback.apply(_self, [_self, series, processorName, path, ext, optional, _config, pattern, patternMin]);
+
+                series.config[_self.configName].sourceExt = ext;
+                series.config[_self.configName].outputExt = _self.outputExt;
 
                 let filename = __dirname + '/data/' + _self.dir + '/' + path + '/out/test.' + _self.extFile;
 
@@ -74,6 +79,7 @@ let objHelper = {
                             data     = fs.readFileSync(filename, 'utf8');
 
                         expect(filename).is.a.file();
+
                         if (_self.isEqualString) {
                             expect(data).is.equal((patternMin || _self.dataStringMin).toString().split("\n"));
                         } else {

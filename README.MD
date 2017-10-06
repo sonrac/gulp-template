@@ -92,3 +92,10 @@ Run
 ```bash
 npm run generate-html path/to/out/folder
 ```
+# Knowing issues
+
+If sass proble build run
+
+```
+node rebuild node-sass --force
+```

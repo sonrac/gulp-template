@@ -18,7 +18,11 @@
   "author": "Donii Sergii <doniysa@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "child-process": "^1.0.2"
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2016": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "child-process": "^1.0.2",
+    "gulp-sass": "^3.1.0"
   },
   "optionalDependencies": {
     "gulp-coffee": "^2.3.4",

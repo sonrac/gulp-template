@@ -50,7 +50,8 @@ let templates = new helper.buildTest({
 describe('Test Templates constructor', () => {
     it('Test simple options', (done) => {
         let templates = new Templates({
-            paths: ['1']
+            paths    : ['1'],
+            sourceExt: 'pug',
         }, {}, {
             outDir : __dirname,
             distDir: __dirname

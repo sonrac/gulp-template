@@ -87,7 +87,7 @@ class JS extends baseBuild {
         super(config, liveReloadOptions, configPaths);
 
         this.babelOptions = _.size(config.babelOptions) ? config.babelOptions : {
-            presets: ['es2015']
+            presets: ['es2015', 'es2016', 'stage-2']
         };
 
         this.outputExt = 'js';

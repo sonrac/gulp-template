@@ -136,8 +136,6 @@ const series          = require('gulp-series'),
                               object.minifyWatch(gulp);
                               break;
                           default:
-                              console.log(123123);
-
                               object[watchType]();
                               break;
                       }

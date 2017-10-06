@@ -172,26 +172,10 @@ class Concat {
         _.each(this.paths, (path, index) => {
             _self.concatOptions      = _self.concatOptions || {};
             _self.concatOptions.path = path.src;
-            let _gulp                = gulp.src(path.src)
-                    .pipe(sourcemaps.init()),
-                answer               = undefined;
-            if (answer = _self.addToTasks.apply(_self, [path.src, /\.css$/, (path, gulp) => {
-                    return gulp.pipe(autoprefixer(_self.autoprefixOptions));
-                }, [path, _gulp]])) {
-                _gulp = answer;
-            }
-            if (answer = _self.addToTasks.apply(_self, [path.src, /\.js$/, (path, gulp) => {
-                    return gulp.pipe(babel(_self.babelOptions));
-                }, [path, _gulp]])) {
-                _gulp = answer;
-            }
-            _gulp = _gulp.pipe(plumber())
-                .pipe(concat(pathObj.basename(path.dest), _self.concatOptions || {}))
-                .pipe(livereload(_self.liveReloadOptions));
 
-            _gulp.pipe(sourcemaps.write('.'))
-                .pipe(gulp.dest(pathObj.dirname(path.dest)));
+            this.runTask(false, babel, _self.babelOptions, autoprefixer, _self.autoprefixOptions);
         });
+
     }
 
     /**
@@ -202,34 +186,44 @@ class Concat {
             return;
         }
 
+        this.runTask(true, uglify, this.uglifyOptions, cleanCSS, this.minifyOptions);
+    }
+
+    runTask(minify, jsProcessor, jsProcOptions, cssProcessor, cssProcessorOptions) {
+
+        minify = minify || false;
+
+        cssProcessor = cssProcessor || jsProcessor;
+        cssProcessorOptions = cssProcessorOptions || jsProcOptions;
+
         let _self = this;
 
-
         _.each(this.paths, (path, index) => {
-            let _answer = undefined,
-                answer = undefined;
+            let answer = undefined,
+                _answer;
 
             if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.css$/, (path, gulp) => {
-                    return [uglify, _self.uglifyOptions]
+                    return [cssProcessor, cssProcessorOptions]
                 }, [path]])) {
                 answer = _answer;
             }
             if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.js$/, (path, gulp) => {
-                    return [uglify, _self.uglifyOptions]
+                    return [uglify, jsProcOptions]
                 }, [path]])) {
                 answer = _answer;
             }
 
-            gulp.src(path.dest)
+            gulp.src(minify ? path.src : path.dest)
                 .pipe(sourcemaps.init())
                 .pipe(plumber())
                 .pipe(livereload(_self.liveReloadOptions))
                 .pipe(rename({
-                    suffix: _self.minifySuffix || '.min'
+                    suffix: minify ? _self.minifySuffix || '.min' : ''
                 }))
                 .pipe(answer ? answer[0](answer[1]).on('error', console.log) : livereload())
                 .pipe(sourcemaps.write('.').on('error', console.log))
                 .pipe(livereload())
+                .pipe(concat(pathObj.basename(path.dest)))
                 .pipe(gulp.dest(pathObj.dirname(path.dest)));
         });
     }

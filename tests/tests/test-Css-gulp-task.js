@@ -21,7 +21,7 @@ let build = new helper.buildTest({
     configName   : 'css',
     taskMinify   : 'minify-css',
     buildCallback: (obj, series, processorName, path, ext, optional, _config, pattern) => {
-        series.config[obj.configName].paths = optional ? [
+        series.config[obj.configName].paths     = optional ? [
             {
                 src : '/src/*.' + ext,
                 dest: 'out'
@@ -32,6 +32,8 @@ let build = new helper.buildTest({
                 dest: __dirname + '/../data/' + obj.dir + '/' + path + '/out'
             }
         ];
+        series.config[obj.configName].sourceExt = ext;
+        series.config[obj.configName].outputExt = 'css';
 
         return series.config;
     },
@@ -43,12 +45,12 @@ let build = new helper.buildTest({
 describe('Test CSS constructor', () => {
     it('Test simple options', (done) => {
         let css = new Css({
-            paths: ['1']
+            paths: ['1'],
+            sourceExt: 'css',
         }, {}, {
-            outDir : __dirname,
-            distDir: __dirname
+            outDir   : __dirname,
+            distDir  : __dirname,
         });
-
         expect(css.paths.length).is.equal(1);
         expect(css.paths[0]).is.equal('1');
         expect(css.getBuildPaths()).is.a('Array');

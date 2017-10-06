@@ -85,9 +85,9 @@ describe('Test JS constructor', () => {
     build.build('gulp-coffee', 'coffeescript', 'coffee', false, {
         processor       : 'gulp-coffee',
         processorOptions: {bare: true},
-    }, 'var cubes, list, math, num, number, opposite, race, square,', 'var n,e,t,u,r,i=');
+    }, 'var cubes, list, math, num, number, opposite, race, square,', 'var cubes,list,math,num,number,opposite,race,square');
     build.build('gulp-coffee', 'coffeescript', 'coffee', true, {
         processor       : 'gulp-coffee',
         processorOptions: {bare: true},
-    }, 'var cubes, list, math, num, number, opposite, race, square', 'var n,e,t,u,r,i=');
+    }, 'var cubes, list, math, num, number, opposite, race, square', 'var cubes,list,math,num,number,opposite,race,square');
 });

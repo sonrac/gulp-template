@@ -240,7 +240,6 @@ class BaseBuild {
             return;
         }
 
-        // console.log(this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true));
         gulp.watch(this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchMinifyTasks);
 
         if (_.isFunction(this.additionalWatchMinifyCallback)) {
