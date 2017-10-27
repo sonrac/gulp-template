@@ -116,7 +116,7 @@ const series          = require('gulp-series'),
       /**
        *
        * @param {String} configName Option config name
-       * @param {Function} construct Function runner
+       * @param {Function} Construct Function runner
        * @param {Boolean} minify If minify flag, run minify task
        * @param {String|Boolean|undefined} watchType Watch type. One of false/undefined (disable watch),
        */
