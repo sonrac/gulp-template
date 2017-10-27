@@ -5,7 +5,7 @@
   "main": "gulpfile.js",
   "scripts": {
     "test": "export ENV=testing; ./node_modules/mocha/bin/mocha --timeout 15000 --recursive tests/tests",
-    "cover": "export ENV=testing; istanbul cover --report clover _mocha tests/tests",
+    "cover": "export ENV=testing; istanbul cover --report clover _mocha tests/tests/**/**",
     "coveralls": "export ENV=testing; npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls",
     "generate-html": "node ./node_modules/jsdoc/jsdoc.js -t template -c jsdoc.conf.json -d",
     "install": "echo '' > .pids"
