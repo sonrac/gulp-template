@@ -14,5 +14,5 @@ build:
           -
             command: 'npm run cover'
             coverage:
-              file: 'coverage/coverage.xml'
+              file: 'coverage/clover.xml'
               format: 'clover'
