@@ -11,7 +11,7 @@
 
 const _       = require('lodash'),
       connect = require('gulp-connect'),
-      config  = require("./../config");
+      config  = require('./../config')
 
 /*
 
@@ -27,36 +27,36 @@ const _       = require('lodash'),
  * @author Donii Sergii<doniysa@gmail.com>
  */
 class Server {
-    /**
-     *
-     * @param {Object} options Server options
-     * @param {String} outDir Default output dir from config
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    constructor(options, outDir) {
-        this.options = options || {};
+  /**
+   *
+   * @param {Object} options Server options
+   * @param {String} outDir Default output dir from config
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  constructor (options, outDir) {
+    this.options = options || {}
 
-        this.options.root       = this.options.root || (this.options.path || (outDir || __dirname)).replace(/\/\//g, '');
-        this.options.port       = this.options.port || 1112;
-        this.options.livereload = this.options.livereload || true;
-    }
+    this.options.root       = this.options.root || (this.options.path || (outDir || __dirname)).replace(/\/\//g, '')
+    this.options.port       = this.options.port || 1112
+    this.options.livereload = this.options.livereload || true
+  }
 
-    /**
-     * Run local server
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    run() {
-        connect.server(this.options);
-    }
+  /**
+   * Run local server
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  run () {
+    connect.server(this.options)
+  }
 }
 
-let server = new Server(config.server, config.outDir);
+let server = new Server(config.server, config.outDir)
 
-server.run();
+server.run()
 
 module.exports = {
-    server     : server,
-    serverClass: Server
-};
+  server     : server,
+  serverClass: Server
+}

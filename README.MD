@@ -1,3 +1,8 @@
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sonrac/gulp-template/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sonrac/gulp-template/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/sonrac/gulp-template/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sonrac/gulp-template/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/sonrac/gulp-template/badges/build.png?b=master)](https://scrutinizer-ci.com/g/sonrac/gulp-template/build-status/master)
+
+
 # Gulp template for page-proofs
 
 Run ` npm install` before use

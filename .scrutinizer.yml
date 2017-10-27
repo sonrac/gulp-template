@@ -4,3 +4,14 @@ filter:
     excluded_paths:
         - tests/*
         - template/
+        - '*.min.js'
+build:
+    tests:
+        before:
+            - 'npm install -g istanbul coveralls mocha'
+            - 'npm install'
+        override:
+            -
+              command: npm run cover
+              file: coverage/coverage.json
+              format: json

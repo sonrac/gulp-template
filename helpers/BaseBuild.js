@@ -8,7 +8,7 @@
  */
 
 const pathBuild = require('./PathBuild'),
-      _         = require('lodash');
+      _         = require('lodash')
 
 /**
  * @class @abstract BaseBuild
@@ -55,224 +55,224 @@ const pathBuild = require('./PathBuild'),
  */
 class BaseBuild {
 
-    /**
-     * BaseBuild constructor
-     *
-     * @param {Object} config CSS compiler config
-     * @param {Object} liveReloadOptions Livereload options
-     * @param {{outDir: {String}, distDir: {String}}} configPaths Default config paths
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    constructor(config, liveReloadOptions, configPaths) {
-        this.extension = 'css';
-        if (new.target === BaseBuild) {
-            throw new TypeError("Cannot construct BaseBuild instances directly");
-        }
-        this.originalConfig = config;
-        this.configPaths    = configPaths;
+  /**
+   * BaseBuild constructor
+   *
+   * @param {Object} config CSS compiler config
+   * @param {Object} liveReloadOptions Livereload options
+   * @param {{outDir: {String}, distDir: {String}}} configPaths Default config paths
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  constructor (config, liveReloadOptions, configPaths) {
+    this.extension = 'css'
+    if (new.target === BaseBuild) {
+      throw new TypeError('Cannot construct BaseBuild instances directly')
+    }
+    this.originalConfig = config
+    this.configPaths    = configPaths
 
-        if (!config.sourceExt && !this.outputExt) {
-            throw 'Extension not set sourceExt in config';
-        }
-        this.sourceExt = this.sourceExt || config.sourceExt;
-        this.outputExt = config.outputExt || this.sourceExt;
+    if (!config.sourceExt && !this.outputExt) {
+      throw 'Extension not set sourceExt in config'
+    }
+    this.sourceExt = this.sourceExt || config.sourceExt
+    this.outputExt = config.outputExt || this.sourceExt
 
-        this.processorName    = config.processor || this.defaultProcessor;
-        this.paths            = config.paths;
-        this.processorOptions = config.processorOptions;
+    this.processorName    = config.processor || this.defaultProcessor
+    this.paths            = config.paths
+    this.processorOptions = config.processorOptions
 
-        if (_.isString(this.processorName)) {
-            this.processor = require(this.processorName);
-        }
-
-        this.ignores          = config.ignorePatterns;
-        this.watchTasks       = config.watchTasks || this.defTasks;
-        this.watchMinifyTasks = config.watchMinifyTasks || this.defMinifyTasks;
-        if (_.isString(this.watchTasks)) {
-            this.watchTasks = [this.watchTasks];
-        }
-        if (_.isString(this.watchMinifyTasks)) {
-            this.watchMinifyTasks = [this.watchMinifyTasks];
-        }
-        this.liveReloadOptions             = (config.liveReloadOptions || (liveReloadOptions || {}));
-        this.additionalMinifyPath          = config.externalMinifyPath;
-        this.additionalBuildCallback       = config.buildCallback;
-        this.additionalWatchCallback       = config.buildWatchCallback;
-        this.additionalMinifyWatchCallback = config.buildMinifyWatchCallback;
-        this.additionalMinifyCallback      = config.minifyCallback;
-
-        this.minifyOptions = config.minifyOptions || {
-                compatibility: 'ie9'
-            };
-
-        this.minifySuffix = config.suffix || '.min';
-        this.enableMin    = config.enableMin || true;
+    if (_.isString(this.processorName)) {
+      this.processor = require(this.processorName)
     }
 
-    /**
-     * Get build paths
-     *
-     * @returns {Object}
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    getBuildPaths() {
-        let currentPaths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true);
+    this.ignores          = config.ignorePatterns
+    this.watchTasks       = config.watchTasks || this.defTasks
+    this.watchMinifyTasks = config.watchMinifyTasks || this.defMinifyTasks
+    if (_.isString(this.watchTasks)) {
+      this.watchTasks = [this.watchTasks]
+    }
+    if (_.isString(this.watchMinifyTasks)) {
+      this.watchMinifyTasks = [this.watchMinifyTasks]
+    }
+    this.liveReloadOptions             = (config.liveReloadOptions || (liveReloadOptions || {}))
+    this.additionalMinifyPath          = config.externalMinifyPath
+    this.additionalBuildCallback       = config.buildCallback
+    this.additionalWatchCallback       = config.buildWatchCallback
+    this.additionalMinifyWatchCallback = config.buildMinifyWatchCallback
+    this.additionalMinifyCallback      = config.minifyCallback
 
-        if (!currentPaths.length) {
-            return [];
-        }
-
-        return currentPaths;
+    this.minifyOptions = config.minifyOptions || {
+      compatibility: 'ie9'
     }
 
-    /**
-     * Check processor set
-     *
-     * @returns {boolean}
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    checkProcessor() {
-        return true;
+    this.minifySuffix = config.suffix || '.min'
+    this.enableMin    = config.enableMin || true
+  }
+
+  /**
+   * Get build paths
+   *
+   * @returns {Object}
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  getBuildPaths () {
+    let currentPaths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true)
+
+    if (!currentPaths.length) {
+      return []
     }
 
-    /**
-     * Build task
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    build() {
-        let _self = this,
-            paths = this.getBuildPaths();
+    return currentPaths
+  }
 
-        if (!_.size(paths)) {
-            return;
-        }
+  /**
+   * Check processor set
+   *
+   * @returns {boolean}
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  checkProcessor () {
+    return true
+  }
 
-        if (!this.checkProcessor()) {
-            return;
-        }
+  /**
+   * Build task
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  build () {
+    let _self = this,
+        paths = this.getBuildPaths()
 
-        _.each(paths, (path) => {
-            _self.runBuildTask.apply(_self, [path]);
-        });
-
-        if (_.isFunction(this.additionalBuildCallback)) {
-            this.additionalBuildCallback.apply(this);
-        }
+    if (!_.size(paths)) {
+      return
     }
 
-    /**
-     * Generate paths
-     *
-     * @param {Object|Array} _paths Arrays
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    runForPaths(_paths) {
-        let _self = this;
-        if (_.size(_paths)) {
-            _.each(_paths, (path) => {
-                _self.runMinify.apply(_self, [path]);
-            });
-        }
+    if (!this.checkProcessor()) {
+      return
     }
 
-    /**
-     * Run watcher for build
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    buildWatch(gulp) {
-        let paths;
+    _.each(paths, (path) => {
+      _self.runBuildTask.apply(_self, [path])
+    })
 
-        if (!_.size(paths = this.getBuildPaths())) {
-            return;
-        }
+    if (_.isFunction(this.additionalBuildCallback)) {
+      this.additionalBuildCallback.apply(this)
+    }
+  }
 
-        gulp.watch(pathBuild.buildWatchPaths(paths), this.watchTasks);
+  /**
+   * Generate paths
+   *
+   * @param {Object|Array} _paths Arrays
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  runForPaths (_paths) {
+    let _self = this
+    if (_.size(_paths)) {
+      _.each(_paths, (path) => {
+        _self.runMinify.apply(_self, [path])
+      })
+    }
+  }
 
-        if (_.isFunction(this.additionalWatchCallback)) {
-            this.additionalWatchCallback.apply(this);
-        }
+  /**
+   * Run watcher for build
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  buildWatch (gulp) {
+    let paths
 
-        this.minifyWatch(gulp);
+    if (!_.size(paths = this.getBuildPaths())) {
+      return
     }
 
-    preparePath(paths, min) {
-        let _self = this;
+    gulp.watch(pathBuild.buildWatchPaths(paths), this.watchTasks)
 
-        paths.forEach((path, index) => {
-            if (!min) {
-                return path;
-            }
-
-            if (!_self.outputExt || !_self.outputExt) {
-                return;
-            }
-
-            paths[index] = (paths[index] + "/**/**/**/**/*." + _self.outputExt).replace(/\/\//g, '/');
-        });
-
-        return paths;
-    };
-
-    /**
-     * Run watcher for minify task
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    minifyWatch(gulp) {
-
-        if (!this.enableMin) {
-            return;
-        }
-
-        if (_.isFunction(this.additionalMinifyWatchCallback)) {
-            this.additionalMinifyWatchCallback.apply(this);
-        }
-        let paths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true);
-        console.log(paths, this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchTasks);
-
-        if (!_.size(paths)) {
-            return;
-        }
-
-        gulp.watch(this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchMinifyTasks);
-
-        if (_.isFunction(this.additionalWatchMinifyCallback)) {
-            this.additionalWatchMinifyCallback.apply(this);
-        }
-
+    if (_.isFunction(this.additionalWatchCallback)) {
+      this.additionalWatchCallback.apply(this)
     }
 
-    /**
-     * Run minify-css task
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    minify() {
-        if (!this.enableMin) {
-            return;
-        }
+    this.minifyWatch(gulp)
+  }
 
-        let additionalPaths = (new pathBuild(this.additionalMinifyPath, this.configPaths)).processFullPath(),
-            currentPaths    = (new pathBuild(this.paths, this.defaultOutPath, this.configPaths)).processFullPath(true),
-            _self           = this;
+  preparePath (paths, min) {
+    let _self = this
 
-        if (!_.size(currentPaths) && !_.size(additionalPaths)) {
-            return;
-        }
+    paths.forEach((path, index) => {
+      if (!min) {
+        return path
+      }
 
-        if (_.isFunction(this.additionalMinifyCallback)) {
-            this.additionalMinifyCallback(this);
-        }
+      if (!_self.outputExt || !_self.outputExt) {
+        return
+      }
 
-        _self.runForPaths(currentPaths);
-        _self.runForPaths(additionalPaths);
+      paths[index] = (paths[index] + '/**/**/**/**/*.' + _self.outputExt).replace(/\/\//g, '/')
+    })
+
+    return paths
+  };
+
+  /**
+   * Run watcher for minify task
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  minifyWatch (gulp) {
+
+    if (!this.enableMin) {
+      return
     }
+
+    if (_.isFunction(this.additionalMinifyWatchCallback)) {
+      this.additionalMinifyWatchCallback.apply(this)
+    }
+    let paths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true)
+    console.log(paths, this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchTasks)
+
+    if (!_.size(paths)) {
+      return
+    }
+
+    gulp.watch(this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchMinifyTasks)
+
+    if (_.isFunction(this.additionalWatchMinifyCallback)) {
+      this.additionalWatchMinifyCallback.apply(this)
+    }
+
+  }
+
+  /**
+   * Run minify-css task
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  minify () {
+    if (!this.enableMin) {
+      return
+    }
+
+    let additionalPaths = (new pathBuild(this.additionalMinifyPath, this.configPaths)).processFullPath(),
+        currentPaths    = (new pathBuild(this.paths, this.defaultOutPath, this.configPaths)).processFullPath(true),
+        _self           = this
+
+    if (!_.size(currentPaths) && !_.size(additionalPaths)) {
+      return
+    }
+
+    if (_.isFunction(this.additionalMinifyCallback)) {
+      this.additionalMinifyCallback(this)
+    }
+
+    _self.runForPaths(currentPaths)
+    _self.runForPaths(additionalPaths)
+  }
 }
 
-module.exports = BaseBuild;
+module.exports = BaseBuild

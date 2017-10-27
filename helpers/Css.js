@@ -17,9 +17,9 @@ const _          = require('lodash'),
       livereload = require('gulp-livereload'),
       watch      = gulp.watch,
       sourcemaps = require('gulp-sourcemaps'),
-      baseBuild  = require("./BaseBuild"),
+      baseBuild  = require('./BaseBuild'),
       rename     = require('gulp-rename'),
-      pathBuild  = require("./PathBuild");
+      pathBuild  = require('./PathBuild')
 
 /**
  * @class Css
@@ -68,106 +68,106 @@ const _          = require('lodash'),
  */
 class Css extends baseBuild {
 
-    /**
-     * Get default processor
-     *
-     * @returns {string}
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    get defaultProcessor() {
-        return 'gulp-less';
+  /**
+   * Get default processor
+   *
+   * @returns {string}
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  get defaultProcessor () {
+    return 'gulp-less'
+  }
+
+  /**
+   * Get default tasks
+   *
+   * @returns {string}
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  get defTasks () {
+    return 'build-css'
+  }
+
+  /**
+   *  Get default minify task
+   * @returns {string}
+   */
+  get defMinifyTasks () {
+    return 'minify-js'
+  }
+
+  /**
+   * Run build task
+   *
+   * @param {{src: {String}, dest: {String}}} path Next path run
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  runBuildTask (path) {
+
+    if (_.isString(path.src)) {
+      path.src = [path.src]
     }
 
-    /**
-     * Run build task
-     *
-     * @param {{src: {String}, dest: {String}}} path Next path run
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    runBuildTask(path) {
-
-        if (_.isString(path.src)) {
-            path.src = [path.src];
-        }
-
-        if (_.isString(path.des)) {
-            path.src = [path.desc];
-        }
-
-        if (_.isArray(this.ignores)) {
-            _.each(this.ignores, (_path) => {
-                path.src.push(_path[0] === '!' ? _path : '!' + _path);
-            });
-        }
-
-        let task = gulp.src(path.src)
-            .pipe(sourcemaps.init())
-            .pipe(this.processor(this.processorOptions).on('error', console.log))
-            .pipe(plumber())
-            .pipe(sourcemaps.write('.'))
-            .pipe(gulp.dest(path.dest))
-            .pipe(livereload(this.liveReloadOptions));
-
-        task.on('error', console.log);
+    if (_.isString(path.des)) {
+      path.src = [path.desc]
     }
 
-    /**
-     * Check processor
-     *
-     * @returns {*}
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    checkProcessor() {
-        return this.processor;
+    if (_.isArray(this.ignores)) {
+      _.each(this.ignores, (_path) => {
+        path.src.push(_path[0] === '!' ? _path : '!' + _path)
+      })
     }
 
-    /**
-     * Get default tasks
-     *
-     * @returns {string}
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    get defTasks() {
-        return 'build-css';
-    }
+    let task = gulp.src(path.src)
+      .pipe(sourcemaps.init())
+      .pipe(this.processor(this.processorOptions).on('error', console.log))
+      .pipe(plumber())
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(path.dest))
+      .pipe(livereload(this.liveReloadOptions))
 
-    /**
-     * Run minify task
-     *
-     * @param {{src: {String}, dest: {String}}} path Next path for minify
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    runMinify(path) {
-        let task = gulp.src([
-            path.dest + '/*.css',
-            '!' + path.dest + '/*.min.css',
-        ])
-            .pipe(sourcemaps.init())
-            .pipe(minify(this.minifyOptions).on('error', console.log))
-            .pipe(plumber())
-            .pipe(rename({
-                suffix: this.minifySuffix
-            }))
-            .pipe(sourcemaps.write('.'))
-            .pipe(gulp.dest(path.dest))
-            .pipe(livereload(this.liveReloadOptions));
+    task.on('error', console.log)
+  }
 
-        task.on('error', console.log);
-    }
+  /**
+   * Check processor
+   *
+   * @returns {*}
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  checkProcessor () {
+    return this.processor
+  }
 
-    /**
-     *  Get default minify task
-     * @returns {string}
-     */
-    get defMinifyTasks() {
-        return 'minify-js';
-    }
+  /**
+   * Run minify task
+   *
+   * @param {{src: {String}, dest: {String}}} path Next path for minify
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  runMinify (path) {
+    let task = gulp.src([
+      path.dest + '/*.css',
+      '!' + path.dest + '/*.min.css',
+    ])
+      .pipe(sourcemaps.init())
+      .pipe(minify(this.minifyOptions).on('error', console.log))
+      .pipe(plumber())
+      .pipe(rename({
+        suffix: this.minifySuffix
+      }))
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(path.dest))
+      .pipe(livereload(this.liveReloadOptions))
+
+    task.on('error', console.log)
+  }
 
 }
 
-module.exports = Css;
+module.exports = Css

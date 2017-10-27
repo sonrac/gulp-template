@@ -15,7 +15,7 @@
  */
 const _            = require('lodash'),
       gulp         = require('gulp'),
-      pathBuilder  = require("./PathBuild"),
+      pathBuilder  = require('./PathBuild'),
       plumber      = require('gulp-plumber'),
       babel        = require('gulp-babel'),
       sourcemaps   = require('gulp-sourcemaps'),
@@ -26,7 +26,7 @@ const _            = require('lodash'),
       pathObj      = require('path'),
       rJS          = require('gulp-requirejs'),
       autoprefixer = require('gulp-autoprefixer'),
-      concat       = require('gulp-concat');
+      concat       = require('gulp-concat')
 
 /**
  * @class Concat
@@ -42,229 +42,237 @@ const _            = require('lodash'),
  */
 class Concat {
 
-    /**
-     * Concat constructor
-     * @param {Object} options Concat options
-     * @param {Object} liveReloadOptions <a target="_blank" href=https://github.com/vohof/gulp-livereload>Livereload</a> options for concat building
-     * @param {{outDir: {String}, distDir: {String}}} defPaths Defined path from config
-     */
-    constructor(options, liveReloadOptions, defPaths) {
-        defPaths               = defPaths || {};
-        this.liveReloadOptions = liveReloadOptions || {};
-        this.paths             = options.paths;
-        this.outDir            = defPaths.outDir;
-        this.outFile           = options.outFile;
-        this.distDir           = defPaths.distDir;
-        this.concatOptions     = options.concatOptions;
-        this.useAMD            = options.configFile || false;
-        this.configFile        = options.configFile;
-        this.sourcePath        = options.sourcePath;
-        this.minPath           = options.minPath;
-        this.babelOptions      = options.babelOptions || {
-                presets: ['es2015']
-            };
-        this.minifyOptions     = options.minifyOptions || {};
-        this.uglifyOptions     = options.uglifyOptions || {};
-        this.minifySuffix      = options.minifySuffix || '.min';
-        this.baseUrl           = options.baseUrl || '';
-        this.rJSFile           = options.file;
-        this.autoprefixOptions = options.autoprefixOptions || {
-                browsers: ['last 7 versions'],
-                cascade : true
-            };
-        this.rJSOptions        = options.requireJSConfig || {};
+  /**
+   * Concat constructor
+   * @param {Object} options Concat options
+   * @param {Object} liveReloadOptions <a target="_blank" href=https://github.com/vohof/gulp-livereload>Livereload</a> options for concat building
+   * @param {{outDir: {String}, distDir: {String}}} defPaths Defined path from config
+   */
+  constructor (options, liveReloadOptions, defPaths) {
+    defPaths               = defPaths || {}
+    this.liveReloadOptions = liveReloadOptions || {}
+    this.paths             = options.paths
+    this.outDir            = defPaths.outDir
+    this.outFile           = options.outFile
+    this.distDir           = defPaths.distDir
+    this.concatOptions     = options.concatOptions
+    this.useAMD            = options.configFile || false
+    this.configFile        = options.configFile
+    this.sourcePath        = options.sourcePath
+    this.minPath           = options.minPath
+    this.babelOptions      = options.babelOptions || {
+      presets: ['es2015']
+    }
+    this.minifyOptions     = options.minifyOptions || {}
+    this.uglifyOptions     = options.uglifyOptions || {}
+    this.minifySuffix      = options.minifySuffix || 'min'
+    this.baseUrl           = options.baseUrl || ''
+    this.rJSFile           = options.file
+    this.autoprefixOptions = options.autoprefixOptions || {
+      browsers: ['last 7 versions'],
+      cascade : true
+    }
+    this.rJSOptions        = options.requireJSConfig || {}
 
-        if (this.useAMD) {
-            this.buildRJSConfig();
+    if (this.useAMD) {
+      this.buildRJSConfig()
+    }
+
+    this.processPath()
+  }
+
+  /**
+   * Build require JS config
+   */
+  buildRJSConfig () {
+    if (!this.useAMD) {
+      return
+    }
+
+    this.rJSOptions = _.extend({
+      baseUrl: this.baseUrl,
+      name   : this.configFile,
+      out    : this.outFile
+    }, this.rJSOptions)
+  }
+
+  /**
+   * Process parse paths
+   */
+  processPath () {
+
+    let paths = []
+    _.each(this.paths, (path, dest) => {
+      paths.push({
+        dest: dest,
+        src : path
+      })
+    })
+
+    this.paths = (new pathBuilder(paths, this.outDir, {
+      distDir: this.distDir,
+      outDir : this.outDir
+    }, true)).processFullPath(true)
+
+    if (!_.isArray(this.paths)) {
+      this.paths = [this.paths]
+    }
+
+    if (this.useAMD) {
+      this.paths.push({
+        src : this.rJSOptions.baseUrl + '/' + this.rJSOptions.name,
+        dest: this.rJSOptions.baseUrl + '/' + this.rJSOptions.out
+      })
+    }
+  }
+
+  /**
+   * Add to task
+   *
+   * @param {String|Array} path Source path
+   * @param {String|RegExp} regex Regexp object
+   * @param {Function} callback Callable function
+   * @param {undefined|Array} callbackParams Options for callback
+   *
+   * @return {Boolean}
+   */
+  addToTasks (path, regex, callback, callbackParams) {
+    regex = _.isString(regex) ? regex : new RegExp(regex)
+    if (_.isArray(path)) {
+      let answer
+      for (let i in path) {
+        if (!path.hasOwnProperty(i)) {
+          continue
         }
 
-        this.processPath();
-    }
-
-    /**
-     * Build require JS config
-     */
-    buildRJSConfig() {
-        if (!this.useAMD) {
-            return;
+        if (answer = this.addToTasks(path[i], regex, callback, callbackParams)) {
+          return answer
         }
 
-        this.rJSOptions = _.extend({
-            baseUrl: this.baseUrl,
-            name   : this.configFile,
-            out    : this.outFile
-        }, this.rJSOptions);
+      }
+    } else {
+      if (path.match(regex)) {
+        return callback.apply(this, callbackParams || [])
+      }
     }
 
-    /**
-     * Process parse paths
-     */
-    processPath() {
+    return false
+  }
 
-        let paths = [];
-        _.each(this.paths, (path, dest) => {
-            paths.push({
-                dest: dest,
-                src : path
-            });
-        });
+  /**
+   * Run concatenate files
+   */
+  build () {
+    if (!_.size(this.paths)) {
+      return
+    }
 
-        this.paths = (new pathBuilder(paths, this.outDir, {
-            distDir: this.distDir,
-            outDir : this.outDir
-        }, true)).processFullPath(true);
+    let _self = this
 
-        if (!_.isArray(this.paths)) {
-            this.paths = [this.paths];
+    // _.each(this.paths, (path, index) => {
+    //   _self.concatOptions.path = path.src
+    //
+    // })
+    _self.concatOptions      = _self.concatOptions || {}
+    this.runTask(false, babel, _self.babelOptions, autoprefixer, _self.autoprefixOptions)
+
+  }
+
+  /**
+   * Run minify files
+   */
+  minify () {
+    if (!_.size(this.paths)) {
+      return
+    }
+
+    this.runTask(true, uglify, this.uglifyOptions, cleanCSS, this.minifyOptions)
+  }
+
+  runTask (minify, jsProcessor, jsProcOptions, cssProcessor, cssProcessorOptions) {
+
+    minify = minify || false
+
+    // cssProcessor        = cssProcessor || jsProcessor
+    // cssProcessorOptions = cssProcessorOptions || jsProcOptions
+
+    let _self = this
+
+    _.each(this.paths, (path, index) => {
+      let answer = undefined,
+          _answer
+
+      if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.css$/, (path, gulp) => {
+          return [cssProcessor, cssProcessorOptions]
+        }, [path]])) {
+        answer = _answer
+      }
+      if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.js$/, (path, gulp) => {
+          return !minify ? [babel, _self.babelOptions] : [uglify, jsProcOptions]
+        }, [path]])) {
+        answer = _answer
+      }
+
+      let filename = pathObj.basename(path.dest)
+
+      if (minify) {
+        let parts = filename.split('.')
+
+        parts[parts.length - 1] = (_self.minifySuffix || 'min') + '.' + parts[parts.length - 1]
+
+        filename = parts.join('.')
+      }
+
+      gulp.src(minify ? path.dest : path.src)
+        .pipe(sourcemaps.init())
+        .pipe(plumber())
+        .pipe(rename({
+          suffix: minify ? _self.minifySuffix || 'min' : ''
+        }))
+        .pipe(answer ? answer[0](answer[1]).on('error', console.log) : (cb) => {return cb;})
+        .pipe(livereload())
+        .pipe(concat(filename))
+        .pipe(gulp.dest(pathObj.dirname(path.dest)))
+        .pipe(sourcemaps.write('.').on('error', console.log))
+    })
+  }
+
+  rJS () {
+    rJS(this.rJSOptions)
+      .pipe(gulp.dest(__dirname + '/../tests/data/concat/js/amd/out'))
+  }
+
+  /**
+   * Run watch files changed
+   */
+  buildWatch (gulp) {
+    let files = []
+    this.paths.forEach((arr, index) => {
+
+      for (let i in arr.src) {
+        if (!arr.src.hasOwnProperty(i)) {
+          continue
         }
 
-        if (this.useAMD) {
-            this.paths.push({
-                src: this.rJSOptions.baseUrl + '/' + this.rJSOptions.name,
-                dest: this.rJSOptions.baseUrl + '/' + this.rJSOptions.out
-            })
-        }
-    }
+        files.push(arr.src[i])
+      }
+    })
 
-    /**
-     * Add to task
-     *
-     * @param {String|Array} path Source path
-     * @param {String|RegExp} regex Regexp object
-     * @param {Function} callback Callable function
-     * @param {undefined|Array} callbackParams Options for callback
-     *
-     * @return {Boolean}
-     */
-    addToTasks(path, regex, callback, callbackParams) {
-        regex = _.isString(regex) ? regex : new RegExp(regex);
-        if (_.isArray(path)) {
-            let answer;
-            for (let i in path) {
-                if (!path.hasOwnProperty(i)) {
-                    continue;
-                }
+    gulp.watch(files, ['concat'])
+  }
 
-                if (answer = this.addToTasks(path[i], regex, callback, callbackParams)) {
-                    return answer;
-                }
+  /**
+   * Watch changed source files for minified
+   */
+  minifyWatch () {
+    let files = []
 
-            }
-        } else {
-            if (path.match(regex)) {
-                return callback.apply(this, callbackParams || []);
-            }
-        }
+    this.paths.forEach((arr, index) => {
+      files.push(arr.dest)
+    })
 
-        return false;
-    }
-
-    /**
-     * Run concatenate files
-     */
-    build() {
-        if (!_.size(this.paths)) {
-            return;
-        }
-
-        let _self = this;
-
-        _.each(this.paths, (path, index) => {
-            _self.concatOptions      = _self.concatOptions || {};
-            _self.concatOptions.path = path.src;
-
-            this.runTask(false, babel, _self.babelOptions, autoprefixer, _self.autoprefixOptions);
-        });
-
-    }
-
-    /**
-     * Run minify files
-     */
-    minify() {
-        if (!_.size(this.paths)) {
-            return;
-        }
-
-        this.runTask(true, uglify, this.uglifyOptions, cleanCSS, this.minifyOptions);
-    }
-
-    runTask(minify, jsProcessor, jsProcOptions, cssProcessor, cssProcessorOptions) {
-
-        minify = minify || false;
-
-        cssProcessor = cssProcessor || jsProcessor;
-        cssProcessorOptions = cssProcessorOptions || jsProcOptions;
-
-        let _self = this;
-
-        _.each(this.paths, (path, index) => {
-            let answer = undefined,
-                _answer;
-
-            if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.css$/, (path, gulp) => {
-                    return [cssProcessor, cssProcessorOptions]
-                }, [path]])) {
-                answer = _answer;
-            }
-            if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.js$/, (path, gulp) => {
-                    return [uglify, jsProcOptions]
-                }, [path]])) {
-                answer = _answer;
-            }
-
-            gulp.src(minify ? path.src : path.dest)
-                .pipe(sourcemaps.init())
-                .pipe(plumber())
-                .pipe(livereload(_self.liveReloadOptions))
-                .pipe(rename({
-                    suffix: minify ? _self.minifySuffix || '.min' : ''
-                }))
-                .pipe(answer ? answer[0](answer[1]).on('error', console.log) : livereload())
-                .pipe(sourcemaps.write('.').on('error', console.log))
-                .pipe(livereload())
-                .pipe(concat(pathObj.basename(path.dest)))
-                .pipe(gulp.dest(pathObj.dirname(path.dest)));
-        });
-    }
-
-    rJS() {
-        rJS(this.rJSOptions)
-            .pipe(gulp.dest(__dirname + "/../tests/data/concat/js/amd/out"));
-    }
-
-    /**
-     * Run watch files changed
-     */
-    buildWatch(gulp) {
-        let files = [];
-        this.paths.forEach((arr, index) => {
-
-            for (let i in arr.src) {
-                if (!arr.src.hasOwnProperty(i)) {
-                    continue;
-                }
-
-                files.push(arr.src[i]);
-            }
-        });
-
-        gulp.watch(files, ['concat']);
-    }
-
-    /**
-     * Watch changed source files for minified
-     */
-    minifyWatch() {
-        let files = [];
-
-        this.paths.forEach((arr, index) => {
-            files.push(arr.dest);
-        });
-
-        gulp.watch(files, ['concat-minify']);
-    }
+    gulp.watch(files, ['concat-minify'])
+  }
 }
 
-
-module.exports = Concat;
+module.exports = Concat

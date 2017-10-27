@@ -14,8 +14,7 @@ const gulp       = require('gulp'),
       _          = require('lodash'),
       plumber    = require('gulp-plumber'),
       livereload = require('gulp-livereload'),
-      changed    = require('gulp-changed'),
-      pathBuild  = require("./PathBuild");
+      pathBuild  = require('./PathBuild')
 
 /**
  * @class Images
@@ -35,76 +34,76 @@ const gulp       = require('gulp'),
  */
 class Images {
 
-    /**
-     * Images contructor
-     *
-     * @param {Object} config Class config
-     * @param {Object} liveReloadOptions Livereload options
-     * @param {Object|Array} paths Default config paths
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    constructor(config, liveReloadOptions, paths) {
-        this.distDir           = paths.distDir;
-        this.outDir            = paths.outDir;
-        this.paths             = config.paths;
-        this.processorName     = config.processor || 'gulp-imagemin';
-        this.processor         = require(this.processorName);
-        this.livereloadOptions = liveReloadOptions || {};
-        this.processorOptions  = config.processorOptions || {
-                interlaced       : true,
-                progressive      : true,
-                optimizationLevel: 5,
-                svgoPlugins      : [{removeViewBox: true}]
-            };
+  /**
+   * Images contructor
+   *
+   * @param {Object} config Class config
+   * @param {Object} liveReloadOptions Livereload options
+   * @param {Object|Array} paths Default config paths
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  constructor (config, liveReloadOptions, paths) {
+    this.distDir           = paths.distDir
+    this.outDir            = paths.outDir
+    this.paths             = config.paths
+    this.processorName     = config.processor || 'gulp-imagemin'
+    this.processor         = require(this.processorName)
+    this.livereloadOptions = liveReloadOptions || {}
+    this.processorOptions  = config.processorOptions || {
+      interlaced       : true,
+      progressive      : true,
+      optimizationLevel: 5,
+      svgoPlugins      : [{removeViewBox: true}]
+    }
+  }
+
+  /**
+   * Run image minify task
+   *
+   * @param {{src: {String}, dest: {String}}} path Next path for minify
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  runImageMinify (path) {
+    let task = gulp.src(path.src)
+      .pipe(plumber())
+      .pipe(this.processor(this.processorOptions).on('error', console.log))
+      // .pipe(changed(path.dest))
+      .pipe(gulp.dest(path.dest))
+      .pipe(livereload(this.liveReloadOptions))
+
+    task.on('error', console.log)
+  }
+
+  /**
+   * Run minify task
+   *
+   * @author Donii Sergii<doniysa@gmail.com>
+   */
+  minify () {
+    let paths = (new pathBuild(this.paths, this.outDir)).processFullPath(),
+        _self = this
+
+    if (!_.size(paths)) {
+      return
     }
 
-    /**
-     * Run image minify task
-     *
-     * @param {{src: {String}, dest: {String}}} path Next path for minify
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    runImageMinify(path) {
-        let task = gulp.src(path.src)
-            .pipe(plumber())
-            .pipe(this.processor(this.processorOptions).on('error', console.log))
-            // .pipe(changed(path.dest))
-            .pipe(gulp.dest(path.dest))
-            .pipe(livereload(this.liveReloadOptions));
+    _.each(paths, function (path) {
+      _self.runImageMinify.apply(_self, [path])
+    })
+  }
 
-        task.on('error', console.log);
+  buildWatch () {
+    let paths = (new pathBuild(this.paths, this.outDir)).processFullPath()
+
+    if (!_.size(paths)) {
+      return
     }
 
-    /**
-     * Run minify task
-     *
-     * @author Donii Sergii<doniysa@gmail.com>
-     */
-    minify() {
-        let paths = (new pathBuild(this.paths, this.outDir)).processFullPath(),
-            _self = this;
-
-        if (!_.size(paths)) {
-            return;
-        }
-
-        _.each(paths, function (path) {
-            _self.runImageMinify.apply(_self, [path]);
-        });
-    }
-
-    buildWatch() {
-        let paths = (new pathBuild(this.paths, this.outDir)).processFullPath();
-
-        if (!_.size(paths)) {
-            return;
-        }
-
-        gulp.watch(pathBuild.buildWatchPaths(paths), ['gulp-imagemin']);
-    }
+    gulp.watch(pathBuild.buildWatchPaths(paths), ['gulp-imagemin'])
+  }
 
 }
 
-module.exports = Images;
+module.exports = Images

@@ -1,0 +1,23 @@
+language: node_js
+
+node_js:
+  - "stable"
+
+cache:
+  directories:
+    - "node_modules"
+
+env:
+  - ENVIRONMENT=testing
+
+before_script:
+  - npm install -g istanbul coveralls mocha
+
+script:
+  - npm test
+
+install:
+  - npm install
+
+after_success:
+  - npm run coveralls
