@@ -14,7 +14,7 @@ chai.use(require('chai-fs'))
 let build = new helper.buildTest({
   extFile      : 'js',
   minifySuffix : '.min',
-  timeout      : [1200, 800],
+  timeout      : [1800, 800],
   buildObject  : JS,
   optionName   : 'js',
   task         : 'build-js',
