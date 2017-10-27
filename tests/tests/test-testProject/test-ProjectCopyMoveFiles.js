@@ -10,7 +10,8 @@ const _helper = require('./../../configRestore'),
 
 chai.use(require('chai-fs'))
 
-describe('Test Copy & move files', () => {
+describe('Test Copy & move files', function () {
+  this.timeout(10000)
 
   _helper.checkConfig()
   let path = __dirname + '/../../test-project/build/plugins'
@@ -18,23 +19,23 @@ describe('Test Copy & move files', () => {
 
   series.series.tasks['copy']()
 
-  // it('Test copy files in project', (done) => {
-  //   setTimeout(() => {
-  //     expect(__dirname + '/../../test-project/build/plugins/bootstrap/css/bootstrap.min.css').is.a.file()
-  //     expect(__dirname + '/../../test-project/build/plugins/yii/yii.js').is.a.file()
-  //
-  //     done()
-  //     series.series.tasks['move']()
-  //
-  //     it('Test move files in project', (done) => {
-  //       setTimeout(() => {
-  //         expect(__dirname + '/../../test-project/build/plugins/bootstrap/yii/yii.js').is.not.file()
-  //         expect(__dirname + '/../../test-project/build/yii.js').is.not.file()
-  //         done()
-  //       }, 400)
-  //     })
-  //   }, 400)
-  // })
+  it('Test copy files in project', (done) => {
+    setTimeout(() => {
+      expect(__dirname + '/../../test-project/build/plugins/bootstrap/css/bootstrap.min.css').is.a.file()
+      expect(__dirname + '/../../test-project/build/plugins/yii/yii.js').is.a.file()
+
+      done()
+      series.series.tasks['move']()
+
+      it('Test move files in project', (done) => {
+        setTimeout(() => {
+          expect(__dirname + '/../../test-project/build/plugins/bootstrap/yii/yii.js').is.not.file()
+          expect(__dirname + '/../../test-project/build/yii.js').is.not.file()
+          done()
+        }, 1000)
+      })
+    }, 1000)
+  })
 
   it('Test move files in project', (done) => {
     setTimeout(() => {
@@ -42,7 +43,7 @@ describe('Test Copy & move files', () => {
       setTimeout(() => {
         expect(__dirname + '/../../test-project/build/plugins/yii.js').is.a.file()
         done()
-      }, 400)
-    }, 500)
+      }, 1000)
+    }, 1000)
   })
 })

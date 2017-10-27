@@ -13,7 +13,8 @@ const chai   = require('chai'),
 
 chai.use(require('chai-fs'))
 
-describe('Test JS Build from test project', () => {
+describe('Test JS Build from test project', function () {
+  this.timeout(10000)
   helper.dropFiles([
     __dirname + '/../../test-project/build/js/tabular.js',
     __dirname + '/../../test-project/build/js/tabular.min.js',
@@ -27,7 +28,7 @@ describe('Test JS Build from test project', () => {
     setTimeout(() => {
       expect(__dirname + '/../../test-project/build/js/tabular.js').is.a.file()
       done()
-    }, 300)
+    }, 1200)
   })
 
   it('Test JS minify', (done) => {
@@ -37,7 +38,7 @@ describe('Test JS Build from test project', () => {
         expect(__dirname + '/../../test-project/build/js/tabular.min.js').is.a.file()
         _helper.restoreConfig()
         done()
-      }, 500)
-    }, 400)
+      }, 1400)
+    }, 1400)
   })
 })

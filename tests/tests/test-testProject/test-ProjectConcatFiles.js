@@ -10,7 +10,8 @@ const _helper = require('./../../configRestore'),
 
 chai.use(require('chai-fs'))
 
-describe('Test concatenate files', () => {
+describe('Test concatenate files', function () {
+  this.timeout(10000)
 
   _helper.checkConfig()
   let path    = __dirname + '/../../test-project/build/js-concat.js',
@@ -28,7 +29,7 @@ describe('Test concatenate files', () => {
 
       done()
       _helper.restoreConfig()
-    }, 400)
+    }, 1000)
   })
 
   it('Test copy files in project', (done) => {
@@ -38,7 +39,7 @@ describe('Test concatenate files', () => {
               expect(minPath).is.a.file();
               done();
               _helper.restoreConfig();
-          }, 900);
-      }, 400);
+          }, 1200);
+      }, 1400);
   });
 })

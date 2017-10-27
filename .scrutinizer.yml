@@ -11,7 +11,8 @@ build:
             - 'npm install -g istanbul coveralls mocha'
             - 'npm install'
         override:
-            -
-              command: npm run cover
-              file: coverage/coverage.json
-              format: json
+          -
+            command: 'npm run cover'
+            coverage:
+              file: 'coverage/coverage.xml'
+              format: 'clover'

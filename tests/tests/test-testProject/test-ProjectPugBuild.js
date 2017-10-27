@@ -13,7 +13,8 @@ const chai   = require('chai'),
 
 chai.use(require('chai-fs'))
 
-describe('Test JS Build from test project', () => {
+describe('Test JS Build from test project', function () {
+  this.timeout(10000)
   helper.dropFiles([
     __dirname + '/../../test-project/build/index.html',
     __dirname + '/../../test-project/build/index.min.html',
@@ -27,7 +28,7 @@ describe('Test JS Build from test project', () => {
     setTimeout(() => {
       expect(__dirname + '/../../test-project/build/index.html').is.a.file()
       done()
-    }, 300)
+    }, 1200)
   })
 
   it('Test HTML minify', (done) => {
@@ -38,7 +39,7 @@ describe('Test JS Build from test project', () => {
         expect(__dirname + '/../../test-project/build/index.min.html').is.a.file()
         _helper.restoreConfig()
         done()
-      }, 500)
-    }, 400)
+      }, 1000)
+    }, 1200)
   })
 })
