@@ -24,6 +24,10 @@ if (process.env.ENV === 'testing') {
  * @ignore connect
  * @ignore open
  */
+/** global: WATCH_BUILD */
+/** global: WATCH_MINIFY */
+/** global: WATCH_ALL */
+/** global: mJs */
 const series          = require('gulp-series'),
       _               = require('lodash'),
       os              = require('os'),
@@ -51,9 +55,10 @@ const series          = require('gulp-series'),
       WATCH_ALL       = 3,
       concat          = require('./helpers/Concat'),
       exec            = require('child_process').exec,
-      copyFiles       = require('./helpers/CopyFiles'),
+      CopyFiles       = require('./helpers/CopyFiles'),
       templates       = require('./helpers/Templates'),
       _config         = require('./config.js'),
+      path            = require('path'),
       /**
        * Build destination and output dir from config
        *
@@ -101,7 +106,7 @@ const series          = require('gulp-series'),
 
         }
 
-        let copy = new copyFiles(paths)
+        let copy = new CopyFiles(paths)
         if (!onlyWatch) {
           copy.process(move)
         } else {
@@ -115,7 +120,7 @@ const series          = require('gulp-series'),
        * @param {Boolean} minify If minify flag, run minify task
        * @param {String|Boolean|undefined} watchType Watch type. One of false/undefined (disable watch),
        */
-      nextBuildTask   = (configName, construct, minify, watchType) => {
+      nextBuildTask   = (configName, Construct, minify, watchType) => {
         let opt = module.exports.config
 
         if (!opt[configName]) {
@@ -125,7 +130,7 @@ const series          = require('gulp-series'),
         opt[configName] = _.isArray(opt[configName]) ? opt[configName] : [opt[configName]]
 
         opt[configName].forEach((next) => {
-          let object = new construct(next, opt.liveReloadOptions, buildConfigPath(opt))
+          let object = new Construct(next, opt.liveReloadOptions, buildConfigPath(opt))
           if (!minify || _.isString(minify)) {
             if (!watchType) {
               object.build()
@@ -160,7 +165,7 @@ const series          = require('gulp-series'),
 series.registerTasks({
   'server'         : () => {
     let fd
-    let pids = fs.readFileSync(__dirname + '/.pids')
+    let pids = fs.readFileSync(path.join(__dirname, '.pids'))
 
     if (pids = pids.toString()) {
       pids = pids.toString()
@@ -168,7 +173,7 @@ series.registerTasks({
         exec('kill ' + _.trim(pid))
       })
     }
-    fd      = fs.openSync(__dirname + '/.pids', 'w')
+    fd      = fs.openSync(path.join(__dirname, '/.pids', 'w'))
     let pid = exec('node ' + __dirname + '/helpers/Server.js > /dev/null 2>/dev/null & echo $!')
     fs.appendFileSync(fd, pid.pid + os.EOL)
 
@@ -219,7 +224,7 @@ series.registerTasks({
     nextBuildTask.apply(this, ['concat', concat])
   },
   'concat-minify'  : () => {
-    nextBuildTask.apply(this, ['concat', concat, true])
+    nextBuildTask.apply(this, ['concat', concat, true, WATCH_MINIFY])
   },
   'watch-css'      : () => {
     nextBuildTask.apply(this, ['css', css, 'all', WATCH_BUILD])
