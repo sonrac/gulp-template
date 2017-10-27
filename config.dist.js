@@ -2,6 +2,8 @@
  * Created by Donii Sergii <doniysa@gmail.com> on 5/1/17.
  */
 
+const pathObj = require('path')
+
 /**
  * @content Test tag
  */
@@ -150,10 +152,10 @@
  */
 const config = {
 
-    distDir          : __dirname + '/tests/test-project/dist',
-    outDir           : __dirname + '/tests/test-project/build',
+    distDir          : pathObj.join(__dirname, 'tests/test-project/dist'),
+    outDir           : pathObj.join(__dirname, 'tests/test-project/build'),
     server           : {
-        path         : __dirname + '/tests/test-project/build',
+        path         : pathObj.join(__dirname, 'tests/test-project/build'),
         port         : 1112,
         openInBrowser: true,
     },
@@ -194,8 +196,8 @@ const config = {
     images           : {
         paths: [
             {
-                src : __dirname + '/tests/data/images/src/*',
-                dest: __dirname + '/tests/data/images/out',
+                src : pathObj.join(__dirname, '/tests/data/images/src/*'),
+                dest: pathObj.join(__dirname, '/tests/data/images/out'),
             }
         ]
     },
@@ -275,8 +277,8 @@ const config = {
         rsyncOptions: {},
         paths       : [
             {
-                src : __dirname + '/tests/test-project/dist/plugins',
-                dest: __dirname + '/tests/test-project/build/'
+                src : pathObj.join(__dirname, 'tests/test-project/dist/plugins'),
+                dest: pathObj.join(__dirname, 'tests/test-project/build/')
             }
         ]
     },
@@ -284,8 +286,8 @@ const config = {
         rsyncOptions: {},
         paths       : [
             {
-                src : __dirname + '/tests/test-project/build/plugins/yii/yii.js',
-                dest: __dirname + '/tests/test-project/build/plugins'
+                src : pathObj.join(__dirname, 'tests/test-project/build/plugins/yii/yii.js'),
+                dest: pathObj.join(__dirname, 'tests/test-project/build/plugins')
             }
         ]
     },

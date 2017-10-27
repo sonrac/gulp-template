@@ -97,7 +97,7 @@ class PathBuild {
     this._pathConfig = []
     let _self        = this
 
-    _.forEach(this.originalConfig, (value, index) => {
+    _.forEach(this.originalConfig, (value) => {
 
       let path = {}
 
@@ -145,8 +145,8 @@ class PathBuild {
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  clearPath (path) {
-    let pathParts  = path.replace(/\/\//g, '/').split('/'),
+  static clearPath (path) {
+    let pathParts  = pathObj.normalize(path),
         retPath    = '',
         additional = '',
         end        = false
@@ -161,13 +161,13 @@ class PathBuild {
       }
 
       if (!end) {
-        retPath += '/' + pathParts[i]
+        retPath = pathObj.join(retPath, pathParts[i])
       } else {
-        additional += '/' + pathParts[i]
+        additional = pathObj.join(additional, pathParts[i])
       }
     }
 
-    return [retPath.replace(/\/\//g, '/'), path, additional]
+    return [retPath, path, additional]
   }
 
   /**
@@ -179,7 +179,7 @@ class PathBuild {
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  checkDirectoryExists (path) {
+  static checkDirectoryExists (path) {
     try {
       fs.statSync(path)
     } catch (e) {
@@ -204,7 +204,7 @@ class PathBuild {
     if (_.isArray(path)) {
       let __self   = this,
           newPaths = []
-      path.forEach((_path, index) => {
+      path.forEach((_path) => {
         let buildPath = __self.getRealPath(_path, checkDestination, context, destination)
 
         if (!_.isEmpty(buildPath)) {
@@ -221,7 +221,7 @@ class PathBuild {
       return path
     }
 
-    path = this.clearPath(path)
+    path = PathBuild.clearPath(path)
 
     if (_.isEmpty(path) || !path.length) {
       path = destination ? context.outDir : context.distDir
@@ -267,24 +267,24 @@ class PathBuild {
       })
     }
 
-    let _path = (__dirname + '/../' + path[0]).replace(/\/\//g, '/');
+    let _path = pathObj.join(__dirname, path[0]);
     (destination ? [
-      ((context.outDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
-      ((context.outDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
+      pathObj.join(context.outDir || '', path[0]),
+      pathObj.join(context.outDir || '', path[1]),
     ] : [
-      ((context.distDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
-      ((context.distDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
+      pathObj.join(context.distDir || '', path[0]),
+      pathObj.join(context.distDir || '', path[1]),
     ]).forEach((value) => {
       allPaths.push(value)
     })
 
     if (destination) {
       [
-        ((context.outDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
-        ((context.outDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
+        pathObj.join(context.outDir || '', path[0]),
+        pathObj.join(context.outDir || '', path[1]),
         context.outDir,
-        ((context.distDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
-        ((context.distDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
+        pathObj.join(context.distDir || '', path[0]),
+        pathObj.join(context.distDir || '', path[1]),
       ].forEach((value) => {
         allPaths.push(value)
       })
@@ -296,7 +296,7 @@ class PathBuild {
     [
       _path,
       path[0],
-      (__dirname + '/' + path[0]).replace(/\/\//g, '/'),
+      (pathObj.join(__dirname, '/', path[0])),
       path[1],
       context.outDir
     ].forEach((value) => {
@@ -306,11 +306,11 @@ class PathBuild {
     allPaths = _.uniq(allPaths);
 
     (destination ? [
-      ((context.distDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
-      ((context.distDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
+      pathObj.join(context.distDir || '', path[0]),
+      pathObj.join(context.distDir || '', path[1]),
     ] : [
-      ((context.outDir || '') + '/' + path[0]).replace(/\/\//g, '/'),
-      ((context.outDir || '') + '/' + path[1]).replace(/\/\//g, '/'),
+      pathObj.join(context.outDir || '', path[0]),
+      pathObj.join(context.outDir || '', path[1]),
     ]).forEach((value) => {
       allPaths.push(value)
     })
@@ -327,24 +327,24 @@ class PathBuild {
 
       let addToPath = ''
       if (_.isArray(allPaths[ind])) {
-        path      = allPaths[ind][0].replace(/\/\//g, '/').replace(/\/$/, '')
+        path      = allPaths[ind][0]
         addToPath = allPaths[ind][1]
       } else {
-        path      = allPaths[ind].replace(/\/\//g, '/').replace(/\/$/, '')
+        path      = allPaths[ind]
         addToPath = additional
       }
 
-      if (this.checkDirectoryExists(path)) {
+      if (PathBuild.checkDirectoryExists(path)) {
 
         if (path === context.outDir && !this.destinationArray) {
           if (path === firstAdd) {
             return path
           }
 
-          return (path + '/' + firstAdd).replace(/\/\//g, '/').replace(/\/$/, '')
+          return pathObj.join(path, firstAdd).replace(/\/\//g, '/').replace(/\/$/, '')
         }
 
-        return (path + '/' + addToPath).replace(/\/\//g, '/').replace(/\/$/, '')
+        return pathObj.join(path, addToPath).replace(/\/\//g, '/').replace(/\/$/, '')
       }
     }
 
@@ -366,7 +366,7 @@ class PathBuild {
         path, dest,
         _self     = this
 
-    _.each(this._pathConfig, (value, index) => {
+    _.each(this._pathConfig, (value) => {
       if (_.isUndefined(value.dest)) {
         throw 'Destination is empty. Check paths option'
       }

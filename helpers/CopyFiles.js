@@ -11,8 +11,6 @@
 
 const _         = require('lodash'),
       gulp      = require('gulp'),
-      watch     = gulp.watch,
-      PathBuild = require('./PathBuild'),
       Rsync     = require('rsync')
 
 /**
@@ -57,7 +55,7 @@ class CopyFiles {
         return
       }
 
-      _paths.forEach(function (path, index) {
+      _paths.forEach(function (path) {
         let nextPath = {}
 
         if (!curPath && !path.src) {
@@ -128,7 +126,7 @@ class CopyFiles {
       sync.set('remove-source-files')
     }
 
-    sync.execute((error, stdout, stderr) => {
+    sync.execute((error) => {
       if (error)
         console.log('Copy or move error: ' + error)
     })

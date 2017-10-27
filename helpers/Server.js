@@ -9,8 +9,7 @@
  * @ignore config
  */
 
-const _       = require('lodash'),
-      connect = require('gulp-connect'),
+const connect = require('gulp-connect'),
       config  = require('./../config')
 
 /*

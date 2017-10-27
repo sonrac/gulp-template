@@ -15,16 +15,16 @@ chai.use(require('chai-fs'))
 describe('Test image optimize', () => {
 
   helper.dropFiles([
-    __dirname + '/../data/images/out/1' + add + '.jpg',
-    __dirname + '/../data/images/out/2' + add + '.gif',
-    __dirname + '/../data/images/out/3' + add + '.svg',
-    __dirname + '/../data/images/out/4' + add + '.png',
-    __dirname + '/../data/images/out/5' + add + '.jpg',
-    __dirname + '/../data/images/now/1' + add + '.jpg',
-    __dirname + '/../data/images/now/2' + add + '.gif',
-    __dirname + '/../data/images/now/3' + add + '.svg',
-    __dirname + '/../data/images/now/4' + add + '.png',
-    __dirname + '/../data/images/now/5' + add + '.jpg',
+    pathObj.join(__dirname, '../data/images/out/1', add + '.jpg'),
+    pathObj.join(__dirname, '../data/images/out/2', add + '.gif'),
+    pathObj.join(__dirname, '../data/images/out/3', add + '.svg'),
+    pathObj.join(__dirname, '../data/images/out/4', add + '.png'),
+    pathObj.join(__dirname, '../data/images/out/5', add + '.jpg'),
+    pathObj.join(__dirname, '../data/images/now/1', add + '.jpg'),
+    pathObj.join(__dirname, '../data/images/now/2', add + '.gif'),
+    pathObj.join(__dirname, '../data/images/now/3', add + '.svg'),
+    pathObj.join(__dirname, '../data/images/now/4', add + '.png'),
+    pathObj.join(__dirname, '../data/images/now/5', add + '.jpg'),
   ])
 
   let image = (dist, out, extinfo, additional, file) => {
@@ -54,9 +54,9 @@ describe('Test image optimize', () => {
           }, 500)
         })
       },
-      base  = __dirname + '/../data/images/src',
-      out   = __dirname + '/../data/images/out',
-      now   = __dirname + '/../data/images/now'
+      base  = pathObj.join(__dirname, '../data/images/src'),
+      out   = pathObj.join(__dirname, '../data/images/out'),
+      now   = pathObj.join(__dirname, '../data/images/now')
   image(base + '/1.jpg', out, 'jpg')
   image(base + '/2.gif', out, 'gif')
   image(base + '/3.svg', out, 'svg')

@@ -16,8 +16,8 @@ chai.use(require('chai-fs'))
 describe('Test JS Build from test project', function () {
   this.timeout(10000)
   helper.dropFiles([
-    __dirname + '/../../test-project/build/js/tabular.js',
-    __dirname + '/../../test-project/build/js/tabular.min.js',
+    pathObj.join(__dirname, '../../test-project/build/js/tabular.js'),
+    pathObj.join(__dirname, '../../test-project/build/js/tabular.min.js'),
   ])
 
   series.series.tasks['build-js']()
@@ -26,7 +26,7 @@ describe('Test JS Build from test project', function () {
 
   it('Test Build JS', (done) => {
     setTimeout(() => {
-      expect(__dirname + '/../../test-project/build/js/tabular.js').is.a.file()
+      expect(pathObj.join(__dirname, '../../test-project/build/js/tabular.js')).is.a.file()
       done()
     }, 1200)
   })
@@ -35,7 +35,7 @@ describe('Test JS Build from test project', function () {
     setTimeout(() => {
       series.series.tasks['minify-js']()
       setTimeout(() => {
-        expect(__dirname + '/../../test-project/build/js/tabular.min.js').is.a.file()
+        expect(pathObj.join(__dirname, '../../test-project/build/js/tabular.min.js')).is.a.file()
         _helper.restoreConfig()
         done()
       }, 1400)

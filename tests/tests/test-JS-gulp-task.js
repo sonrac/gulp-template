@@ -2,12 +2,12 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
-const chai   = require('chai'),
-      expect = chai.expect,
-      _      = require('lodash'),
-      fs     = require('fs'),
-      helper = require('./../helper'),
-      JS     = require('./../../helpers/JS')
+const chai    = require('chai'),
+      expect  = chai.expect,
+      _       = require('lodash'),
+      pathObj = require('path'),
+      helper  = require('./../helper'),
+      JS      = require('./../../helpers/JS')
 
 chai.use(require('chai-fs'))
 
@@ -28,8 +28,8 @@ let build = new helper.buildTest({
         dest: 'out'
       }
     ] : [{
-      src : __dirname + '/../data/' + obj.dir + '/' + path + '/src/*.' + ext,
-      dest: __dirname + '/../data/' + obj.dir + '/' + path + '/out'
+      src : pathObj.join(__dirname, '../data', obj.dir, path, 'src/*.' + ext),
+      dest: pathObj.join(__dirname, '../data', obj.dir, path, 'out')
     }]
 
     _config = _config || {}
@@ -76,7 +76,7 @@ describe('Test JS constructor', function () {
     processor       : 'gulp-typescript-babel',
     processorOptions: {
       incremental: true,
-      configFile : __dirname + '/../data/js-tests/typescript/src/tsconfig.json'
+      configFile : pathObj.join(__dirname, '../data/js-tests/typescript/src/tsconfig.json')
     },
     babelOptions    : {presets: ['es2015']}
   })

@@ -14,8 +14,8 @@ describe('Test concatenate files', function () {
   this.timeout(10000)
 
   _helper.checkConfig()
-  let path    = __dirname + '/../../test-project/build/js-concat.js',
-      minPath = __dirname + '/../../test-project/build/js-concat.min.js'
+  let path    = pathObj.join(__dirname, '../../test-project/build/js-concat.js'),
+      minPath = pathObj.join(__dirname, '../../test-project/build/js-concat.min.js')
   sys.execSync('rm -rf ' + path)
   sys.execSync('rm -rf ' + path + '.map')
   sys.execSync('rm -rf ' + minPath)

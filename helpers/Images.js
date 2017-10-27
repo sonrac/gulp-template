@@ -14,7 +14,7 @@ const gulp       = require('gulp'),
       _          = require('lodash'),
       plumber    = require('gulp-plumber'),
       livereload = require('gulp-livereload'),
-      pathBuild  = require('./PathBuild')
+      PathBuild  = require('./PathBuild')
 
 /**
  * @class Images
@@ -82,7 +82,7 @@ class Images {
    * @author Donii Sergii<doniysa@gmail.com>
    */
   minify () {
-    let paths = (new pathBuild(this.paths, this.outDir)).processFullPath(),
+    let paths = (new PathBuild(this.paths, this.outDir)).processFullPath(),
         _self = this
 
     if (!_.size(paths)) {
@@ -95,13 +95,13 @@ class Images {
   }
 
   buildWatch () {
-    let paths = (new pathBuild(this.paths, this.outDir)).processFullPath()
+    let paths = (new PathBuild(this.paths, this.outDir)).processFullPath()
 
     if (!_.size(paths)) {
       return
     }
 
-    gulp.watch(pathBuild.buildWatchPaths(paths), ['gulp-imagemin'])
+    gulp.watch(PathBuild.buildWatchPaths(paths), ['gulp-imagemin'])
   }
 
 }

@@ -16,8 +16,8 @@ let prepareFiles = () => {
       dests = []
 
   for (let i = 1; i <= 4; i++) {
-    let filename = __dirname + '/../data/src/' + i.toString() + '.txt',
-        destName = __dirname + '/../data/destination/' + i.toString() + '.txt'
+    let filename = pathObj.join(__dirname, '../data/src', i.toString() + '.txt'),
+        destName = pathObj.join(__dirname, '../data/destination', i.toString() + '.txt')
     files.push(filename)
     dests.push(destName)
   }
@@ -33,16 +33,16 @@ describe('CopyFiles class tests', () => {
     copyFiles: {
       paths: [
         {
-          dest: __dirname + '/../data/destination',
-          src : __dirname + '/../data/src/*'
+          dest: pathObj.join(__dirname, '../data/destination'),
+          src : pathObj.join(__dirname, '../data/src/*')
         }
       ]
     },
     moveFiles: {
       paths: [
         {
-          dest: __dirname + '/../data/destination',
-          src : __dirname + '/../data/src/*'
+          dest: pathObj.join(__dirname, '../data/destination'),
+          src : pathObj.join(__dirname, '../data/src/*')
         }
       ]
     }

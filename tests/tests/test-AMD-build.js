@@ -16,7 +16,7 @@ describe('AMD test build', () => {
   it('Test amd build', (done) => {
     let config = {
       configFile: '../bootstrap',
-      baseUrl   : __dirname + '/../data/concat/js/amd/src',
+      baseUrl   : pathObj.join(__dirname, '../data/concat/js/amd/src'),
       outFile   : '../out/build.js'
     }
 
@@ -25,7 +25,7 @@ describe('AMD test build', () => {
     c.rJS()
 
     setTimeout(() => {
-      expect(__dirname + '/../data/concat/js/amd/out/build.js').is.a.file()
+      expect(pathObj.join(__dirname, '../data/concat/js/amd/out/build.js')).is.a.file()
       done()
     }, 500)
   })

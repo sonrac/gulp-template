@@ -27,8 +27,8 @@ let templates = new helper.buildTest({
       }
     ] : [
       {
-        src : __dirname + '/../data/' + obj.dir + '/' + path + '/src/*.' + ext,
-        dest: __dirname + '/../data/' + obj.dir + '/' + path + '/out'
+        src : pathObj.join(__dirname, '../data', obj.dir, path, 'src/*.' + ext),
+        dest: pathObj.join(__dirname, '../data', obj.dir, path, 'out')
       }
     ]
 

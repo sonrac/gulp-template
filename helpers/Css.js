@@ -19,7 +19,7 @@ const _          = require('lodash'),
       sourcemaps = require('gulp-sourcemaps'),
       baseBuild  = require('./BaseBuild'),
       rename     = require('gulp-rename'),
-      pathBuild  = require('./PathBuild')
+      PathBuild  = require('./PathBuild')
 
 /**
  * @class Css

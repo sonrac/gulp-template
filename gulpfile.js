@@ -174,7 +174,7 @@ series.registerTasks({
       })
     }
     fd      = fs.openSync(path.join(__dirname, '/.pids', 'w'))
-    let pid = exec('node ' + __dirname + '/helpers/Server.js > /dev/null 2>/dev/null & echo $!')
+    let pid = exec('node ' + pathObj.join(__dirname, '/helpers/Server.js > /dev/null 2>/dev/null & echo $!'))
     fs.appendFileSync(fd, pid.pid + os.EOL)
 
   },

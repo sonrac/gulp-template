@@ -8,18 +8,18 @@ const _        = require('lodash'),
       pathObj  = require('path'),
       concat   = require('./../../helpers/Concat'),
       helper   = require('./../helper'),
-      baseTest = (config, callback, build, minify) => {
+      baseTest = (config, callback, build) => {
         let _concat = new concat(config.config, config.liveReloadOptions, config.defPaths)
 
         helper.dropFiles([
-          __dirname + '/../data/concat/js/simple/out/out.js',
-          __dirname + '/../data/concat/js/simple/out/out.min.js',
-          __dirname + '/../data/concat/js/simple/out/out.js.map',
-          __dirname + '/../data/concat/js/simple/out/out.min.js.map',
-          __dirname + '/../data/concat/css/out/out.css',
-          __dirname + '/../data/concat/css/out/out.min.css',
-          __dirname + '/../data/concat/css/out/out.css.map',
-          __dirname + '/../data/concat/css/out/out.min.css.map',
+          pathObj.join(__dirname, '../data/concat/js/simple/out/out.js'),
+          pathObj.join(__dirname, '../data/concat/js/simple/out/out.min.js'),
+          pathObj.join(__dirname, '../data/concat/js/simple/out/out.js.map'),
+          pathObj.join(__dirname, '../data/concat/js/simple/out/out.min.js.map'),
+          pathObj.join(__dirname, '../data/concat/css/out/out.css'),
+          pathObj.join(__dirname, '../data/concat/css/out/out.min.css'),
+          pathObj.join(__dirname, '../data/concat/css/out/out.css.map'),
+          pathObj.join(__dirname, '../data/concat/css/out/out.min.css.map'),
         ])
 
         config.defPaths = config.defPaths || {}
@@ -35,7 +35,6 @@ const _        = require('lodash'),
           expect(_concat.paths[0].src.length).is.equal(1)
           callback()
         } else {
-          minify = minify || false
           _concat.build()
           setTimeout(() => {
             expect(_concat.paths[0].dest).is.a.file()
@@ -57,13 +56,13 @@ chai.use(require('chai-fs'))
 describe('Test files concatenate', () => {
   it('Test constructor concatenate with fully path', (done) => {
     let config          = {}
-    config.min          = __dirname + '/test.css'
+    config.min          = pathObj.join(__dirname, 'test.css')
     config.config       = {}
     config.config.paths = {}
 
     config.config.paths[config.min] = [
-      __dirname + '/../data/css-tests/less/src/test.less',
-      __dirname + '/../data/css-tests/less/src/test.less',
+      pathObj.join(__dirname, '../data/css-tests/less/src/test.less'),
+      pathObj.join(__dirname, '../data/css-tests/less/src/test.less'),
     ]
 
     baseTest(config, done)
@@ -71,8 +70,8 @@ describe('Test files concatenate', () => {
   it('Test constructor concatenate build with relative path', (done) => {
     let config          = {
       defPaths: {
-        distDir: __dirname + '/../data/css-tests',
-        outDir : __dirname + '/../data/'
+        distDir: pathObj.join(__dirname, '../data/css-tests'),
+        outDir : pathObj.join(__dirname, '../data')
       }
     }
     config.min          = '/test.css'
@@ -88,13 +87,13 @@ describe('Test files concatenate', () => {
   })
   it('Test concatenate & build js with absolute path', (done) => {
     let config          = {}
-    config.min          = __dirname + '/../data/concat/js/simple/out/out.js'
+    config.min          = pathObj.join(__dirname, '../data/concat/js/simple/out/out.js')
     config.config       = {}
     config.config.paths = {}
 
     config.config.paths[config.min] = [
-      __dirname + '/../data/concat/js/simple/src/main.js',
-      __dirname + '/../data/concat/js/simple/src/second.js',
+      pathObj.join(__dirname, '../data/concat/js/simple/src/main.js'),
+      pathObj.join(__dirname, '../data/concat/js/simple/src/second.js'),
     ]
 
     baseTest(config, done, true)
@@ -102,8 +101,8 @@ describe('Test files concatenate', () => {
   it('Test concatenate & build js with relative path', (done) => {
     let config          = {
       defPaths: {
-        distDir: __dirname + '/../data/concat',
-        outDir : __dirname + '/../data/concat'
+        distDir: pathObj.join(__dirname, '../data/concat'),
+        outDir : pathObj.join(__dirname, '../data/concat')
       }
     }
     config.min          = 'js/simple/out/out.js'
@@ -119,13 +118,13 @@ describe('Test files concatenate', () => {
   })
   it('Test concatenate & build & minify js with absolute path', (done) => {
     let config          = {}
-    config.min          = __dirname + '/../data/concat/js/simple/out/out.js'
+    config.min          = pathObj.join(__dirname, '../data/concat/js/simple/out/out.js')
     config.config       = {}
     config.config.paths = {}
 
     config.config.paths[config.min] = [
-      __dirname + '/../data/concat/js/simple/src/main.js',
-      __dirname + '/../data/concat/js/simple/src/second.js',
+      pathObj.join(__dirname, '../data/concat/js/simple/src/main.js'),
+      pathObj.join(__dirname, '../data/concat/js/simple/src/second.js'),
     ]
 
     baseTest(config, done, true, true)
@@ -134,8 +133,8 @@ describe('Test files concatenate', () => {
   it('Test concatenate & minify css with relative path', (done) => {
     let config          = {
       defPaths: {
-        distDir: __dirname + '/../data/concat/css/src',
-        outDir : __dirname + '/../data/concat/css/out'
+        distDir: pathObj.join(__dirname, '../data/concat/css/src'),
+        outDir : pathObj.join(__dirname, '../data/concat/css/out')
       }
     }
     config.min          = 'out.css'
@@ -152,13 +151,13 @@ describe('Test files concatenate', () => {
 
   it('Test concatenate & minify css with absolute path', (done) => {
     let config          = {}
-    config.min          = __dirname + '/../data/concat/css/out/out.css'
+    config.min          = pathObj.join(__dirname, '../data/concat/css/out/out.css')
     config.config       = {}
     config.config.paths = {}
 
     config.config.paths[config.min] = [
-      __dirname + '/../data/concat/css/src/main.css',
-      __dirname + '/../data/concat/css/src/second.css',
+      pathObj.join(__dirname, '../data/concat/css/src/main.css'),
+      pathObj.join(__dirname, '../data/concat/css/src/second.css'),
     ]
 
     baseTest(config, done, true, true)

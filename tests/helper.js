@@ -2,11 +2,12 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
-const fs     = require('fs'),
-      chai   = require('chai'),
-      series = require('./../gulpfile'),
-      expect = chai.expect,
-      _      = require('lodash')
+const fs      = require('fs'),
+      chai    = require('chai'),
+      series  = require('./../gulpfile'),
+      expect  = chai.expect,
+      pathObj = require('path'),
+      _       = require('lodash')
 
 chai.use(require('chai-fs'))
 
@@ -43,16 +44,18 @@ let objHelper = {
 
       it('Test ' + processorName + ' build' + (optional ? ' with relative path' : ''), (done) => {
         objHelper.dropFiles([
-          __dirname + '/data/' + _self.dir + '/' + path + '/out/test.' + _self.extFile,
-          __dirname + '/data/' + _self.dir + '/' + path + '/out/test.' + _self.extFile + '.map',
-          __dirname + '/data/' + _self.dir + '/' + path + '/out/test' + _self.minifySuffix + '.' + this.extFile,
-          __dirname + '/data/' + _self.dir + '/' + path + '/out/test' + _self.minifySuffix + '.' + this.extFile + '.map'
+          pathObj.join(__dirname, '/data/', _self.dir, path, '/out/test.' + _self.extFile),
+          pathObj.join(__dirname, '/data/', _self.dir, path, '/out/test.', _self.extFile + '.map'),
+          pathObj.join(__dirname, '/data/', _self.dir, path, '/out/test'), _self.minifySuffix + '.' + this.extFile,
+          pathObj.join(__dirname, '/data/', _self.dir, path, '/out/test', _self.minifySuffix + '.' + this.extFile + '.map'),
+          pathObj.join(__dirname, '/data/', _self.dir, path, '/out/test'), _self.minifySuffix + this.extFile,
+          pathObj.join(__dirname, '/data/', _self.dir, path, '/out/test', _self.minifySuffix + this.extFile + '.map')
         ])
 
         series.config                             = _.extend(series.config || {}, _self.config || {})
         series.config[_self.configName]           = {processor: processorName}
-        series.config.outDir                      = optional ? __dirname + '/data/' + this.dir + '/' + path : ''
-        series.config.distDir                     = optional ? __dirname + '/data/' + this.dir + '/' + path + '/out' : ''
+        series.config.outDir                      = optional ? pathObj.join(__dirname, 'data', this.dir, path) : ''
+        series.config.distDir                     = optional ? pathObj.join(__dirname, 'data', this.dir, path, 'out') : ''
         series.config[_self.configName].sourceExt = ext
         series.config[_self.configName].outputExt = _self.outputExt
 
@@ -61,7 +64,7 @@ let objHelper = {
         series.config[_self.configName].sourceExt = ext
         series.config[_self.configName].outputExt = _self.outputExt
 
-        let filename = __dirname + '/data/' + _self.dir + '/' + path + '/out/test.' + _self.extFile
+        let filename = pathObj.join(__dirname, '/data/' + _self.dir + '/' + path + '/out/test.') + _self.extFile
 
         series.series.tasks[_self.task]()
         setTimeout(() => {
@@ -77,7 +80,7 @@ let objHelper = {
           }
 
           setTimeout(() => {
-            let filename = __dirname + '/data/' + _self.dir + '/' + path + '/out/test' + _self.minifySuffix + '.' + _self.extFile,
+            let filename = pathObj.join(__dirname, '/data/' + _self.dir + '/' + path + '/out/test' + _self.minifySuffix + '.') + _self.extFile,
                 data     = fs.readFileSync(filename, 'utf8')
 
             expect(filename).is.a.file()

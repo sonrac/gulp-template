@@ -15,8 +15,8 @@ describe('Test CSS Build from test project', function () {
   this.timeout(10000)
 
   helper.dropFiles([
-    __dirname + '/../../test-project/build/cs/tabular.css',
-    __dirname + '/../../test-project/build/cs/tabular.min.css',
+    pathObj.join(__dirname, '../../test-project/build/cs/tabular.css'),
+    pathObj.join(__dirname, '../../test-project/build/cs/tabular.min.css'),
   ])
 
   series.series.tasks['build-css']()
@@ -25,7 +25,7 @@ describe('Test CSS Build from test project', function () {
 
   it('Test Build CSS', (done) => {
     setTimeout(() => {
-      expect(__dirname + '/../../test-project/build/css/tabular.css').is.a.file()
+      expect(pathObj.join(__dirname, '../../test-project/build/css/tabular.css')).is.a.file()
       done()
     }, 1200)
   })
@@ -34,7 +34,7 @@ describe('Test CSS Build from test project', function () {
     setTimeout(() => {
       series.series.tasks['minify-css']()
       setTimeout(() => {
-        expect(__dirname + '/../../test-project/build/css/tabular.min.css').is.a.file()
+        expect(pathObj.join(__dirname, '../../test-project/build/css/tabular.min.css')).is.a.file()
         _helper.restoreConfig()
         done()
       }, 1000)

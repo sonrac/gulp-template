@@ -7,7 +7,7 @@
  * @type {PathBuild}
  */
 
-const pathBuild = require('./PathBuild'),
+const PathBuild = require('./PathBuild'),
       _         = require('lodash')
 
 /**
@@ -118,7 +118,7 @@ class BaseBuild {
    * @author Donii Sergii<doniysa@gmail.com>
    */
   getBuildPaths () {
-    let currentPaths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true)
+    let currentPaths = (new PathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true)
 
     if (!currentPaths.length) {
       return []
@@ -192,7 +192,7 @@ class BaseBuild {
       return
     }
 
-    gulp.watch(pathBuild.buildWatchPaths(paths), this.watchTasks)
+    gulp.watch(PathBuild.buildWatchPaths(paths), this.watchTasks)
 
     if (_.isFunction(this.additionalWatchCallback)) {
       this.additionalWatchCallback.apply(this)
@@ -233,14 +233,14 @@ class BaseBuild {
     if (_.isFunction(this.additionalMinifyWatchCallback)) {
       this.additionalMinifyWatchCallback.apply(this)
     }
-    let paths = (new pathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true)
-    console.log(paths, this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchTasks)
+    let paths = (new PathBuild(this.paths, this.defaultOutPath || this.configPaths.outDir, this.configPaths)).processFullPath(true)
+    console.log(paths, this.preparePath(PathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchTasks)
 
     if (!_.size(paths)) {
       return
     }
 
-    gulp.watch(this.preparePath(pathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchMinifyTasks)
+    gulp.watch(this.preparePath(PathBuild.buildWatchPaths(paths, 'dest', true), true), this.watchMinifyTasks)
 
     if (_.isFunction(this.additionalWatchMinifyCallback)) {
       this.additionalWatchMinifyCallback.apply(this)
@@ -258,8 +258,8 @@ class BaseBuild {
       return
     }
 
-    let additionalPaths = (new pathBuild(this.additionalMinifyPath, this.configPaths)).processFullPath(),
-        currentPaths    = (new pathBuild(this.paths, this.defaultOutPath, this.configPaths)).processFullPath(true),
+    let additionalPaths = (new PathBuild(this.additionalMinifyPath, this.configPaths)).processFullPath(),
+        currentPaths    = (new PathBuild(this.paths, this.defaultOutPath, this.configPaths)).processFullPath(true),
         _self           = this
 
     if (!_.size(currentPaths) && !_.size(additionalPaths)) {

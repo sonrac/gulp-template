@@ -15,7 +15,7 @@
  */
 const _            = require('lodash'),
       gulp         = require('gulp'),
-      pathBuilder  = require('./PathBuild'),
+      PathBuilder  = require('./PathBuild'),
       plumber      = require('gulp-plumber'),
       babel        = require('gulp-babel'),
       sourcemaps   = require('gulp-sourcemaps'),
@@ -109,7 +109,7 @@ class Concat {
       })
     })
 
-    this.paths = (new pathBuilder(paths, this.outDir, {
+    this.paths = (new PathBuilder(paths, this.outDir, {
       distDir: this.distDir,
       outDir : this.outDir
     }, true)).processFullPath(true)
@@ -139,16 +139,14 @@ class Concat {
   addToTasks (path, regex, callback, callbackParams) {
     regex = _.isString(regex) ? regex : new RegExp(regex)
     if (_.isArray(path)) {
-      let answer
       for (let i in path) {
         if (!path.hasOwnProperty(i)) {
           continue
         }
 
-        if (answer = this.addToTasks(path[i], regex, callback, callbackParams)) {
-          return answer
-        }
+        let answer = this.addToTasks(path[i], regex, callback, callbackParams)
 
+        return answer ? answer : false
       }
     } else {
       if (path.match(regex)) {
@@ -169,10 +167,6 @@ class Concat {
 
     let _self = this
 
-    // _.each(this.paths, (path, index) => {
-    //   _self.concatOptions.path = path.src
-    //
-    // })
     _self.concatOptions      = _self.concatOptions || {}
     this.runTask(false, babel, _self.babelOptions, autoprefixer, _self.autoprefixOptions)
 
@@ -198,16 +192,16 @@ class Concat {
 
     let _self = this
 
-    _.each(this.paths, (path, index) => {
+    _.each(this.paths, (path) => {
       let answer = undefined,
           _answer
 
-      if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.css$/, (path, gulp) => {
+      if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.css$/, () => {
           return [cssProcessor, cssProcessorOptions]
         }, [path]])) {
         answer = _answer
       }
-      if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.js$/, (path, gulp) => {
+      if (_answer = _self.addToTasks.apply(_self, [path.dest, /\.js$/, () => {
           return !minify ? [babel, _self.babelOptions] : [uglify, jsProcOptions]
         }, [path]])) {
         answer = _answer
@@ -239,7 +233,7 @@ class Concat {
 
   rJS () {
     rJS(this.rJSOptions)
-      .pipe(gulp.dest(__dirname + '/../tests/data/concat/js/amd/out'))
+      .pipe(gulp.dest(pathObj.join(__dirname, '../tests/data/concat/js/amd/out')))
   }
 
   /**
@@ -247,7 +241,7 @@ class Concat {
    */
   buildWatch (gulp) {
     let files = []
-    this.paths.forEach((arr, index) => {
+    this.paths.forEach((arr) => {
 
       for (let i in arr.src) {
         if (!arr.src.hasOwnProperty(i)) {
@@ -267,7 +261,7 @@ class Concat {
   minifyWatch () {
     let files = []
 
-    this.paths.forEach((arr, index) => {
+    this.paths.forEach((arr) => {
       files.push(arr.dest)
     })
 
