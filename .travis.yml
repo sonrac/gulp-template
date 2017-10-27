@@ -11,6 +11,7 @@ env:
 
 before_script:
   - npm install -g istanbul coveralls mocha
+  - chmod -R 777 tests/
 
 script:
   - npm test
