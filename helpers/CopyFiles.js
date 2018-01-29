@@ -10,7 +10,6 @@
  */
 
 const _         = require('lodash'),
-      gulp      = require('gulp'),
       Rsync     = require('rsync')
 
 /**

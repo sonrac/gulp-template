@@ -1,6 +1,8 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sonrac/gulp-template/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sonrac/gulp-template/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/sonrac/gulp-template/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sonrac/gulp-template/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/sonrac/gulp-template/badges/build.png?b=master)](https://scrutinizer-ci.com/g/sonrac/gulp-template/build-status/master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/59430ed75b0a26b2dd95/maintainability)](https://codeclimate.com/github/sonrac/gulp-template/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/59430ed75b0a26b2dd95/test_coverage)](https://codeclimate.com/github/sonrac/gulp-template/test_coverage)
 
 # Gulp template for page-proofs
 
