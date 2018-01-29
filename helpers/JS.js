@@ -14,16 +14,12 @@
  */
 const _          = require('lodash'),
       gulp       = require('gulp'),
-      babel      = require('gulp-babel'),
       uglify     = require('gulp-uglify'),
       plumber    = require('gulp-plumber'),
       livereload = require('gulp-livereload'),
-      watch      = gulp.watch,
       sourcemaps = require('gulp-sourcemaps'),
       baseBuild  = require('./BaseBuild'),
-      Css        = require('./Css'),
-      rename     = require('gulp-rename'),
-      PathBuild  = require('./PathBuild')
+      rename     = require('gulp-rename');
 
 /**
  * @class JS

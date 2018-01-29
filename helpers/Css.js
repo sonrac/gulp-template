@@ -15,11 +15,9 @@ const _          = require('lodash'),
       minify     = require('gulp-clean-css'),
       plumber    = require('gulp-plumber'),
       livereload = require('gulp-livereload'),
-      watch      = gulp.watch,
       sourcemaps = require('gulp-sourcemaps'),
       baseBuild  = require('./BaseBuild'),
-      rename     = require('gulp-rename'),
-      PathBuild  = require('./PathBuild')
+      rename     = require('gulp-rename');
 
 /**
  * @class Css

@@ -11,8 +11,6 @@
 
 const _         = require('lodash'),
       gulp      = require('gulp'),
-      watch     = gulp.watch,
-      PathBuild = require('./PathBuild'),
       Rsync     = require('rsync')
 
 /**
@@ -44,7 +42,7 @@ class CopyFiles {
     }
 
     if (!_.isArray(config.paths)) {
-      config.paths = [paths]
+      config.paths = [config.paths]
     }
 
     let _self = this
@@ -129,8 +127,9 @@ class CopyFiles {
     }
 
     sync.execute((error, stdout, stderr) => {
-      if (error)
+      if (error) {
         console.log('Copy or move error: ' + error)
+      }
     })
   }
 
