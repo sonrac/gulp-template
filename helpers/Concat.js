@@ -15,7 +15,7 @@
  */
 const _            = require('lodash'),
       gulp         = require('gulp'),
-      pathBuilder  = require('./PathBuild'),
+      PathBuilder  = require('./PathBuild'),
       plumber      = require('gulp-plumber'),
       babel        = require('gulp-babel'),
       sourcemaps   = require('gulp-sourcemaps'),
@@ -109,7 +109,7 @@ class Concat {
       })
     })
 
-    this.paths = (new pathBuilder(paths, this.outDir, {
+    this.paths = (new PathBuilder(paths, this.outDir, {
       distDir: this.distDir,
       outDir : this.outDir
     }, true)).processFullPath(true)

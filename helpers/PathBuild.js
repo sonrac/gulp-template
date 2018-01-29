@@ -7,9 +7,9 @@
  * @ignore fs
  */
 
-const _       = require('lodash'),
-      pathObj = require('path'),
-      fs      = require('fs')
+const _ = require('lodash'),
+  pathObj = require('path'),
+  fs = require('fs')
 
 /**
  * @class {PathBuild}
@@ -18,8 +18,8 @@ const _       = require('lodash'),
  * @property {Object|Array} pathConfig Path config
  * @property {Object} originalConfig Original config
  * @property {String} defaultOutPath Default out dir
- * @property {String} distDir Distributive config default dit
- * @property {String} outDir Output config default dir
+ * @property String distDir Distributive config default dit
+ * @property String outDir Output config default dir
  * @property {Boolean} destinationArray If false, set src array or dest as array otherwise
  *
  * @author Donii Sergii<doniysa@gmail.com>
@@ -29,19 +29,19 @@ class PathBuild {
   /**
    * PathBuild constructor
    * @param {Object|Array} pathConfig
-   * @param {String|undefined} defaultOutFolder
+   * @param {{String}|undefined} defaultOutFolder
    * @param {{outDir: {String}, distDir: {String}}|undefined} options Default path config option
    * @param {Boolean} arrDestination If false, set src array or dest as array otherwise
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  constructor (pathConfig, defaultOutFolder, options, arrDestination) {
-    options               = options || {}
-    this.originalConfig   = pathConfig
-    this._pathConfig      = []
+  constructor(pathConfig, defaultOutFolder, options, arrDestination = false) {
+    options = options || {}
+    this.originalConfig = pathConfig
+    this._pathConfig = []
     this.defaultOutFolder = defaultOutFolder
-    this.distDir          = options.distDir
-    this.outDir           = options.outDir
+    this.distDir = options.distDir
+    this.outDir = options.outDir
     this.destinationArray = arrDestination || false
 
     this.process()
@@ -54,7 +54,7 @@ class PathBuild {
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  get pathConfig () {
+  get pathConfig() {
     return this._pathConfig
   }
 
@@ -66,8 +66,8 @@ class PathBuild {
    *
    * @returns {Array}
    */
-  static buildWatchPaths (paths, opt) {
-    opt        = opt || 'src'
+  static buildWatchPaths(paths, opt) {
+    opt = opt || 'src'
     let nPaths = []
     _.each(paths, (path) => {
       if (_.isArray(path[opt])) {
@@ -93,11 +93,11 @@ class PathBuild {
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  process () {
+  process() {
     this._pathConfig = []
-    let _self        = this
+    let _self = this
 
-    _.forEach(this.originalConfig, (value, index) => {
+    _.forEach(this.originalConfig, (value) => {
 
       let path = {}
 
@@ -145,11 +145,11 @@ class PathBuild {
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  clearPath (path) {
-    let pathParts  = path.replace(/\/\//g, '/').split('/'),
-        retPath    = '',
-        additional = '',
-        end        = false
+  static clearPath(path) {
+    let pathParts = path.replace(/\/\//g, '/').split('/'),
+      retPath = '',
+      additional = '',
+      end = false
 
     for (let i in pathParts) {
       if (!pathParts.hasOwnProperty(i)) {
@@ -179,7 +179,7 @@ class PathBuild {
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  checkDirectoryExists (path) {
+  static checkDirectoryExists(path) {
     try {
       fs.statSync(path)
     } catch (e) {
@@ -200,10 +200,10 @@ class PathBuild {
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  getRealPath (path, checkDestination, context, destination) {
+  getRealPath(path, checkDestination, context, destination) {
     if (_.isArray(path)) {
-      let __self   = this,
-          newPaths = []
+      let __self = this,
+        newPaths = []
       path.forEach((_path, index) => {
         let buildPath = __self.getRealPath(_path, checkDestination, context, destination)
 
@@ -221,7 +221,10 @@ class PathBuild {
       return path
     }
 
-    path = this.clearPath(path)
+    /**
+     * @type {Object}
+     */
+    path = PathBuild.clearPath(path)
 
     if (_.isEmpty(path) || !path.length) {
       path = destination ? context.outDir : context.distDir
@@ -231,28 +234,28 @@ class PathBuild {
 
     if (this.destinationArray) {
 
-      let base      = (destination ? this.outDir : this.distDir) || '',
-          buildPath = (_path, level) => {
-            let newPath    = _path,
-                additional = []
+      let base = (destination ? this.outDir : this.distDir) || '',
+        buildPath = (_path, level) => {
+          let newPath = _path,
+            additional = []
 
-            for (let i = 0; i < level; i++) {
-              let p = pathObj.dirname(newPath)
-              if (_.isEmpty(newPath)) {
-                break
-              }
-
-              additional.push(pathObj.basename(newPath))
-              newPath = p
+          for (let i = 0; i < level; i++) {
+            let p = pathObj.dirname(newPath)
+            if (_.isEmpty(newPath)) {
+              break
             }
 
-            return [newPath, additional.reverse().join('/')]
+            additional.push(pathObj.basename(newPath))
+            newPath = p
           }
+
+          return [newPath, additional.reverse().join('/')]
+        }
 
       let dirnames = []
 
       for (let i = 0; i < 3; i++) {
-        dirnames[i]     = buildPath(path[0], i)
+        dirnames[i] = buildPath(path[0], i)
         dirnames[i + 3] = [base + dirnames[i][0], dirnames[i][1]]
 
         dirnames[i + 6] = buildPath(path[1], i + 3)
@@ -291,7 +294,7 @@ class PathBuild {
     }
 
     let additional = path[2],
-        firstAdd   = path[1];
+      firstAdd = path[1];
 
     [
       _path,
@@ -327,14 +330,14 @@ class PathBuild {
 
       let addToPath = ''
       if (_.isArray(allPaths[ind])) {
-        path      = allPaths[ind][0].replace(/\/\//g, '/').replace(/\/$/, '')
+        path = allPaths[ind][0].replace(/\/\//g, '/').replace(/\/$/, '')
         addToPath = allPaths[ind][1]
       } else {
-        path      = allPaths[ind].replace(/\/\//g, '/').replace(/\/$/, '')
+        path = allPaths[ind].replace(/\/\//g, '/').replace(/\/$/, '')
         addToPath = additional
       }
 
-      if (this.checkDirectoryExists(path)) {
+      if (PathBuild.checkDirectoryExists(path)) {
 
         if (path === context.outDir && !this.destinationArray) {
           if (path === firstAdd) {
@@ -360,11 +363,10 @@ class PathBuild {
    *
    * @author Donii Sergii<doniysa@gmail.com>
    */
-  processFullPath (checkDestination, checkSource) {
-    checkSource   = _.isUndefined(checkSource) ? true : checkSource
+  processFullPath(checkDestination, checkSource = true) {
     let realPaths = [],
-        path, dest,
-        _self     = this
+      path, dest,
+      _self = this
 
     _.each(this._pathConfig, (value, index) => {
       if (_.isUndefined(value.dest)) {
@@ -373,7 +375,7 @@ class PathBuild {
 
       if ((path = _self.getRealPath(value.src, checkSource, _self)) && (dest = _self.getRealPath(value.dest, checkDestination, _self, true))) {
         realPaths.push({
-          src : path,
+          src: path,
           dest: dest || value.dest
         })
       }

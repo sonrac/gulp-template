@@ -23,7 +23,7 @@ const _          = require('lodash'),
       baseBuild  = require('./BaseBuild'),
       Css        = require('./Css'),
       rename     = require('gulp-rename'),
-      pathBuild  = require('./PathBuild')
+      PathBuild  = require('./PathBuild')
 
 /**
  * @class JS

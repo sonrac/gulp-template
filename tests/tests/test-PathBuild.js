@@ -6,10 +6,10 @@ const chai      = require('chai'),
       expect    = chai.expect,
       fs        = require('fs'),
       _         = require('lodash'),
-      pathBuild = require('./../../helpers/PathBuild')
+      PathBuild = require('./../../helpers/PathBuild')
 
 describe('Path build test', () => {
-  let build = new pathBuild([
+  let build = new PathBuild([
     'test',
     {
       'src': '1'
@@ -38,7 +38,7 @@ describe('Path build test', () => {
       'tests/data'
     ]
 
-    _prepare = new pathBuild(paths, 'tests/data/1')
+    let _prepare = new PathBuild(paths, 'tests/data/1')
 
     paths = _prepare.processFullPath()
 
@@ -52,7 +52,7 @@ describe('Path build test', () => {
       'test/data'
     ]
 
-    _prepare = new pathBuild(paths, 'tests/data/1')
+    let _prepare = new PathBuild(paths, 'tests/data/1')
 
     paths = _prepare.processFullPath()
 
@@ -65,7 +65,7 @@ describe('Path build test', () => {
       'tests/data'
     ]
 
-    _prepare = new pathBuild(paths, 'tests/data/1')
+    let _prepare = new PathBuild(paths, 'tests/data/1')
 
     paths = _prepare.processFullPath(true)
 
@@ -78,7 +78,7 @@ describe('Path build test', () => {
       'tests/data'
     ]
 
-    _prepare = new pathBuild(paths, 'tests/data/destination')
+    let _prepare = new PathBuild(paths, 'tests/data/destination')
 
     paths = _prepare.processFullPath(true)
 
@@ -91,7 +91,7 @@ describe('Path build test', () => {
       ['tests/data'],
     ]
 
-    _prepare = new pathBuild(paths, 'tests/data/destination')
+    let _prepare = new PathBuild(paths, 'tests/data/destination')
 
     paths = _prepare.processFullPath(true, true)
 
