@@ -3,6 +3,7 @@
 [![Build Status](https://scrutinizer-ci.com/g/sonrac/gulp-template/badges/build.png?b=master)](https://scrutinizer-ci.com/g/sonrac/gulp-template/build-status/master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/59430ed75b0a26b2dd95/maintainability)](https://codeclimate.com/github/sonrac/gulp-template/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/59430ed75b0a26b2dd95/test_coverage)](https://codeclimate.com/github/sonrac/gulp-template/test_coverage)
+[![Build Status](https://travis-ci.org/sonrac/gulp-template.svg?branch=master)](https://travis-ci.org/sonrac/gulp-template)
 
 # Gulp template for page-proofs
 
