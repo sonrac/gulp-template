@@ -2,16 +2,16 @@
  * @author Donii Sergii <doniysa@gmail.com>
  */
 
-const fs     = require('fs'),
-      chai   = require('chai'),
-      series = require('./../gulpfile'),
-      expect = chai.expect,
-      _      = require('lodash')
+const fs = require('fs'),
+  chai = require('chai'),
+  series = require('./../gulpfile'),
+  expect = chai.expect,
+  _ = require('lodash')
 
 chai.use(require('chai-fs'))
 
 let objHelper = {
-  dropFiles       : (list) => {
+  dropFiles: (list) => {
     _.each(list, function (filename) {
       try {
         fs.statSync(filename)
@@ -26,19 +26,19 @@ let objHelper = {
       fs.openSync(filename, 'w')
     })
   },
-  buildTest       : class Build {
-    constructor (options) {
+  buildTest: class Build {
+    constructor(options) {
       let _self = this
       _.each(options, (value, option) => {
         _self[option] = value
       })
 
       this.timeout = this.timeout || [500, 500]
-      this.helper  = objHelper
+      this.helper = objHelper
     }
 
-    build (processorName, path, ext, optional, _config, pattern, patternMin) {
-      optional  = optional || false
+    build(processorName, path, ext, optional, _config, pattern, patternMin) {
+      optional = optional || false
       let _self = this
 
       it('Test ' + processorName + ' build' + (optional ? ' with relative path' : ''), (done) => {
@@ -49,10 +49,11 @@ let objHelper = {
           __dirname + '/data/' + _self.dir + '/' + path + '/out/test' + _self.minifySuffix + '.' + this.extFile + '.map'
         ])
 
-        series.config                             = _.extend(series.config || {}, _self.config || {})
-        series.config[_self.configName]           = {processor: processorName}
-        series.config.outDir                      = optional ? __dirname + '/data/' + this.dir + '/' + path : ''
-        series.config.distDir                     = optional ? __dirname + '/data/' + this.dir + '/' + path + '/out' : ''
+        let oldConfig = series.config
+        series.changeConfig(_.extend(series.config || {}, _self.config || {}))
+        series.config[_self.configName] = {processor: processorName}
+        series.config.outDir = optional ? __dirname + '/data/' + this.dir + '/' + path : ''
+        series.config.distDir = optional ? __dirname + '/data/' + this.dir + '/' + path + '/out' : ''
         series.config[_self.configName].sourceExt = ext
         series.config[_self.configName].outputExt = _self.outputExt
 
@@ -78,7 +79,7 @@ let objHelper = {
 
           setTimeout(() => {
             let filename = __dirname + '/data/' + _self.dir + '/' + path + '/out/test' + _self.minifySuffix + '.' + _self.extFile,
-                data     = fs.readFileSync(filename, 'utf8')
+              data = fs.readFileSync(filename, 'utf8')
 
             expect(filename).is.a.file()
 
@@ -87,6 +88,7 @@ let objHelper = {
             } else {
               expect(data.match((patternMin || _self.dataStringMin).toString().split('\n').join(''))).is.a('array')
             }
+            series.changeConfig(oldConfig)
             done()
           }, _self.timeout[1])
         }, _self.timeout[0])
