@@ -20,6 +20,7 @@ let build = new helper.buildTest({
   task         : 'build-js',
   isEqualString: false,
   configName   : 'js',
+  timeout      : [3000, 3000],
   taskMinify   : 'minify-js',
   buildCallback: (obj, series, processorName, path, ext, optional, _config, pattern) => {
     series.config[obj.configName].paths = optional ? [
@@ -50,7 +51,7 @@ let build = new helper.buildTest({
 })
 
 describe('Test JS constructor', function () {
-  this.timeout(15000)
+  this.timeout(50000)
   it('Test simple options', (done) => {
 
     let js = new JS({
