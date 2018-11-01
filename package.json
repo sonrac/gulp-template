@@ -6,7 +6,7 @@
   "scripts": {
     "test": "yarn run clear-out && export ENV=testing; ./node_modules/mocha/bin/mocha --timeout 15000 --recursive tests/tests",
     "cover": "export ENV=testing; istanbul cover --report clover _mocha tests/tests/**/**",
-    "coveralls": "export ENV=testing; npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls",
+    "coveralls": "export ENV=testing; yarn run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls",
     "generate-html": "node ./node_modules/jsdoc/jsdoc.js -t template -c jsdoc.conf.json -d",
     "install": "echo '' > .pids",
     "clear-out": "$(rm -rf `find tests/data/. -type f ! -iname \".gitignore\" | grep \"/out/\"`) && $(rm -rf `find tests/test-project/build/. -type f ! -iname \".gitignore\"`)"
