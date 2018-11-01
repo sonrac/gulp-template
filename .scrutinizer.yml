@@ -10,11 +10,12 @@ build:
       node: v8.12.0
     tests:
         before:
-            - 'npm install -g istanbul coveralls mocha'
-            - 'npm install'
+            - 'npm install -g yarn'
+            - 'yarn global add istanbul coveralls mocha'
+            - 'yarn install'
         override:
           -
-            command: 'npm run cover'
+            command: 'yarn run cover'
             coverage:
               file: 'coverage/clover.xml'
               format: 'clover'
