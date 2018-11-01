@@ -15,7 +15,7 @@ chai.use(require('chai-fs'))
 describe('AMD test build', () => {
   it('Test amd build', (done) => {
     let config = {
-      configFile: '../bootstrap',
+      configFile: 'amd/bootstrap',
       baseUrl   : __dirname + '/../data/concat/js/amd/src',
       outFile   : '../out/build.js'
     }
