@@ -1,6 +1,6 @@
 language: node_js
 node_js:
- - "node"
+  - '8'
 
 cache:
   directories:
@@ -10,14 +10,15 @@ env:
   - ENVIRONMENT=testing
 
 before_script:
-  - npm install -g istanbul coveralls mocha
+  - npm install -g yarn
+  - yarn global add istanbul coveralls mocha
   - chmod -R 777 tests/
 
 script:
-  - npm test
+  - yarn test
 
 install:
-  - npm install
+  - yarn install
 
 after_success:
-  - npm run coveralls
+  - yarn run coveralls
