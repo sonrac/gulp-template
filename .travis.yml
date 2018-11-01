@@ -11,7 +11,7 @@ env:
 
 before_script:
   - npm install -g yarn
-  - yarn global install istanbul coveralls mocha
+  - yarn global add istanbul coveralls mocha
   - chmod -R 777 tests/
 
 script:
