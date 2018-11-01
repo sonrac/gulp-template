@@ -243,12 +243,26 @@ const config = {
             }
         ],
         babelOptions                 : {
-            presets: ['es2015']
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  "useBuiltIns": "entry"
+                }
+              ]
+            ]
         },
         sourceExt: "js",
         outputExt: 'js',
         processorOptions             : {
-            presets: ['es2015']
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  "useBuiltIns": "entry"
+                }
+              ]
+            ]
         },
         processor                    : 'gulp-babel',
         liveReloadOptions            : {},
@@ -263,7 +277,7 @@ const config = {
         additionalBuildWaCallback    : () => {
         },
         minifyOptions                : {
-            compatibility: 'ie9'
+            ie8: true
         },
         minifySuffix                 : '.min',
         watchTasks                   : ['build-js'],

@@ -72,17 +72,24 @@ describe('Test JS constructor', function () {
   build.build('gulp-babel', 'js', 'js', false)
   build.build('gulp-babel', 'js', 'js', true)
 
-  build.build('gulp-typescript-babel', 'typescript', 'ts', false, {
-    processor       : 'gulp-typescript-babel',
+  build.build('gulp-typescript', 'typescript', 'ts', false, {
+    processor       : 'gulp-typescript',
     processorOptions: {
-      incremental: true,
-      configFile : __dirname + '/../data/js-tests/typescript/src/tsconfig.json'
+      noImplicitAny: true,
+      project : __dirname + '/../data/js-tests/typescript/src/tsconfig.json'
     },
-    babelOptions    : {presets: ['es2015']}
-  })
-  build.build('gulp-typescript-babel', 'typescript', 'ts', true, {
-    processor: 'gulp-typescript-babel'
-  }, 'var Car = function')
+    babelOptions    : {presets: [
+        [
+          "@babel/preset-env",
+          {
+            "useBuiltIns": "entry"
+          }
+        ]
+      ]}
+  }, 'var Car =', 'var Car=function')
+  build.build('gulp-typescript', 'typescript', 'ts', true, {
+    processor: 'gulp-typescript'
+  }, 'var Car =', 'var Car=function')
   build.build('gulp-coffee', 'coffeescript', 'coffee', false, {
     processor       : 'gulp-coffee',
     processorOptions: {bare: true},

@@ -61,7 +61,14 @@ class Concat {
     this.sourcePath        = options.sourcePath
     this.minPath           = options.minPath
     this.babelOptions      = options.babelOptions || {
-      presets: ['es2015']
+      presets: [
+        [
+          "@babel/preset-env",
+          {
+            "useBuiltIns": "entry"
+          }
+        ]
+      ]
     }
     this.minifyOptions     = options.minifyOptions || {}
     this.uglifyOptions     = options.uglifyOptions || {}

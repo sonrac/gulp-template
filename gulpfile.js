@@ -286,5 +286,8 @@ if (_.size(_config.additionalSeries)) {
 module.exports = {
   series: series,
   config: _config,
-  gulp  : gulp
+  gulp  : gulp,
+  changeConfig: (newConfig) => {
+    module.exports.config = newConfig
+  }
 }

@@ -10,6 +10,7 @@ const chai   = require('chai'),
       copy   = require('./../../helpers/CopyFiles')
 
 chai.use(require('chai-fs'))
+const oldConfig = series.config
 
 let prepareFiles = () => {
   let files = [],
@@ -29,7 +30,7 @@ let prepareFiles = () => {
 }
 
 describe('CopyFiles class tests', () => {
-  series.config = {
+  configObj = {
     copyFiles: {
       paths: [
         {
@@ -50,18 +51,21 @@ describe('CopyFiles class tests', () => {
   let files     = prepareFiles()
 
   it('Files Creation', (done) => {
+    files = prepareFiles()
+    series.changeConfig(configObj)
     series.series.tasks['copy']()
     setTimeout(() => {
       files.forEach((path) => {
         expect(path.replace('/src', '/destination')).is.a.file()
       })
+      series.changeConfig(oldConfig)
 
-      files = prepareFiles()
       done()
     }, 100)
   })
 
   it('Moving Files', (done) => {
+    series.changeConfig(configObj)
     series.series.tasks['move']()
     setTimeout(() => {
       done()
@@ -69,6 +73,7 @@ describe('CopyFiles class tests', () => {
         expect(path).not.is.a.file()
         expect(path.replace('/src', '/destination')).is.a.file()
       })
+      series.changeConfig(oldConfig)
       done()
     }, 100)
   })

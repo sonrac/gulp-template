@@ -9,6 +9,7 @@ const _helper = require('./../../configRestore'),
       series  = require('./../../../gulpfile')
 
 chai.use(require('chai-fs'))
+const oldConfig = series.config
 
 describe('Test concatenate files', function () {
   this.timeout(10000)
@@ -21,6 +22,7 @@ describe('Test concatenate files', function () {
   sys.execSync('rm -rf ' + minPath)
   sys.execSync('rm -rf ' + minPath + '.map')
 
+  series.config = require(__dirname + '/../../../config')
   series.series.tasks['concat']()
 
   it('Test copy files in project', (done) => {
@@ -29,16 +31,19 @@ describe('Test concatenate files', function () {
 
       done()
       _helper.restoreConfig()
+      series.config = oldConfig
     }, 1000)
   })
 
   it('Test copy files in project', (done) => {
       setTimeout(() => {
+          series.config = require(__dirname + '/../../../config')
           series.series.tasks['concat-minify']();
           setTimeout(() => {
               expect(minPath).is.a.file();
               done();
               _helper.restoreConfig();
+              series.config = oldConfig
           }, 1200);
       }, 1400);
   });

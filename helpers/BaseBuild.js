@@ -104,7 +104,7 @@ class BaseBuild {
     this.additionalMinifyCallback      = config.minifyCallback
 
     this.minifyOptions = config.minifyOptions || {
-      compatibility: 'ie9'
+      ie8: true
     }
 
     this.minifySuffix = config.suffix || '.min'
