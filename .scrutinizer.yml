@@ -7,7 +7,7 @@ filter:
         - '*.min.js'
 build:
     environment:
-      node: v6.2.0
+      node: v8.12.0
     tests:
         before:
             - 'npm install -g istanbul coveralls mocha'
