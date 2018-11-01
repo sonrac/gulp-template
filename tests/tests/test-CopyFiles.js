@@ -29,7 +29,7 @@ let prepareFiles = () => {
 }
 
 describe('CopyFiles class tests', () => {
-  let config   = {
+  let configObj   = {
         paths: [
           {
             dest: __dirname + '/../data/destination',
@@ -37,7 +37,7 @@ describe('CopyFiles class tests', () => {
           }
         ]
       },
-      copyInst = new copy(config),
+      copyInst = new copy(configObj),
       files    = prepareFiles()
 
   it('Check config instance', (done) => {
@@ -47,13 +47,14 @@ describe('CopyFiles class tests', () => {
   })
 
   it('Files Creation', (done) => {
+    files = prepareFiles()
+    copyInst = new copy(configObj)
     copyInst.process()
     setTimeout(() => {
       files.forEach((path) => {
         expect(path.replace('/src', '/destination')).is.a.file()
       })
 
-      files = prepareFiles()
       done()
     }, 200)
   })

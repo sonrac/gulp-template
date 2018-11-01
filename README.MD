@@ -7,7 +7,7 @@
 
 # Gulp template for page-proofs
 
-Run ` npm install` before use
+Run ` yarn install` before use
 
 ## Introduction
 
@@ -80,13 +80,13 @@ gulp
 Install dev dependencies first:
 
 ```bash
-npm install --with-dev
+yarn install --with-dev
 ```
 
 Running test:
 
 ```bash
-npm test
+yarn test
 ```
 
 ## Links 
@@ -97,7 +97,7 @@ npm test
 
 Run 
 ```bash
-npm run generate-html path/to/out/folder
+yarn run generate-html path/to/out/folder
 ```
 # Knowing issues
 

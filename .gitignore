@@ -10,4 +10,5 @@ bower_components/
 coverage/*
 !tests/test-project/dist/amd/config.js
 docs/
+/*.log
 !tests/data/concat/js/amd/config.js

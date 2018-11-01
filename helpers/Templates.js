@@ -18,7 +18,7 @@ const baseBuild  = require('./BaseBuild'),
       plumber    = require('gulp-plumber'),
       rename     = require('gulp-rename'),
       livereload = require('gulp-livereload'),
-      minify     = require('gulp-minify-html')
+      minify     = require('gulp-htmlmin')
 
 /**
  * @class Templates
