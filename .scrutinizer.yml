@@ -6,6 +6,8 @@ filter:
         - template/
         - '*.min.js'
 build:
+    environment:
+      node: v6.2.0
     tests:
         before:
             - 'npm install -g istanbul coveralls mocha'
