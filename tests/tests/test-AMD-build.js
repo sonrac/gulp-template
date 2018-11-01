@@ -27,6 +27,6 @@ describe('AMD test build', () => {
     setTimeout(() => {
       expect(__dirname + '/../data/concat/js/amd/out/build.js').is.a.file()
       done()
-    }, 500)
+    }, 3000)
   })
 })
