@@ -6,11 +6,11 @@ filter:
         - template/
         - '*.min.js'
 build:
-  nodes:
-    analysis:
-      tests:
-        override:
-          - js-scrutinizer-run
+    nodes:
+      analysis:
+        tests:
+          override:
+            - js-scrutinizer-run
     environment:
       node: v8.12.0
     tests:
