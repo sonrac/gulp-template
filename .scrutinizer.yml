@@ -15,7 +15,7 @@ build:
             - 'yarn install'
         override:
           -
-            command: 'yarn run cover'
+            command: 'yarn run cover && js-scrutinizer-run'
             coverage:
               file: 'coverage/clover.xml'
               format: 'clover'
